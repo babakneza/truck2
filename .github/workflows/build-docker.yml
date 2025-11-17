@@ -7,20 +7,9 @@ on:
       - 'server/**'
       - '.github/workflows/build-docker.yml'
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: 'Choose what to build'
-        required: false
-        default: 'docker'
-        type: choice
-        options:
-          - docker
-          - apk
-          - all
 
 jobs:
   build-and-push:
-    if: ${{ github.event_name != 'workflow_dispatch' || contains(fromJson('["docker","all"]'), github.event.inputs.build_type) }}
     runs-on: ubuntu-latest
 
     permissions:
