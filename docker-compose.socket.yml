@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  socket-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: truck2-socket-server
+    ports:
+      - "3001:3001"
+    environment:
+      - SOCKET_PORT=3001
+      - DIRECTUS_URL=https://admin.itboy.ir
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - truck2-network
+
+networks:
+  truck2-network:
+    driver: bridge
