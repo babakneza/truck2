@@ -3,6 +3,8 @@ import AuthModal from './AuthModal'
 import { getStoredUser, logoutUser, getAuthToken } from '../services/directusAuth'
 import './Header.css'
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://admin.itboy.ir'
+
 export default function Header({ onNavigate }) {
   const [authModalOpen, setAuthModalOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -24,20 +26,20 @@ export default function Header({ onNavigate }) {
       const token = getAuthToken()
       if (!token) return
 
-      const meRes = await fetch('/api/users/me?fields=id', {
+      const meRes = await fetch(`${API_URL}/users/me?fields=id`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       const meData = await meRes.json()
       const userId = meData.data.id
 
-      const userRes = await fetch(`/api/items/users?filter={"user_id":{"_eq":"${userId}"}}&fields=profile_photo`, {
+      const userRes = await fetch(`${API_URL}/items/users?filter={"user_id":{"_eq":"${userId}"}}&fields=profile_photo`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       const userData = await userRes.json()
 
       if (userData.data && userData.data.length > 0 && userData.data[0].profile_photo) {
         const photoId = userData.data[0].profile_photo
-        const photoRes = await fetch(`/api/assets/${photoId}`, {
+        const photoRes = await fetch(`${API_URL}/assets/${photoId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
 
