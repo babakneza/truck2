@@ -6,9 +6,20 @@ on:
   pull_request:
     branches: [ master, main ]
   workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Choose what to build'
+        required: false
+        default: 'apk'
+        type: choice
+        options:
+          - apk
+          - docker
+          - all
 
 jobs:
   build:
+    if: ${{ github.event_name != 'workflow_dispatch' || contains(fromJson('["apk","all"]'), github.event.inputs.build_type) }}
     runs-on: ubuntu-latest
 
     steps:
