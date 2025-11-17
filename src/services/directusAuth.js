@@ -1,6 +1,6 @@
 import { createDirectus, rest, authentication } from '@directus/sdk'
 
-const API_URL = '/api'
+const API_URL = import.meta.env.VITE_API_URL || 'https://admin.itboy.ir'
 
 let client = null
 let roleCache = null

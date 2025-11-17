@@ -1,6 +1,6 @@
 import { ensureTokenValid } from './directusAuth'
 
-const API_URL = '/api'
+const API_URL = import.meta.env.VITE_API_URL || 'https://admin.itboy.ir'
 
 const getHeaders = async () => {
   const tokenResult = await ensureTokenValid()
@@ -174,10 +174,10 @@ export const chatAPI = {
 
           if (userAvatar) {
             if (typeof userAvatar === 'object' && userAvatar.id) {
-              userAvatar = `/api/assets/${userAvatar.id}`
+              userAvatar = `${API_URL}/assets/${userAvatar.id}`
             } else if (typeof userAvatar === 'string') {
-              if (!userAvatar.includes('http') && !userAvatar.startsWith('/api')) {
-                userAvatar = `/api/assets/${userAvatar}`
+              if (!userAvatar.includes('http') && !userAvatar.startsWith(`${API_URL}`)) {
+                userAvatar = `${API_URL}/assets/${userAvatar}`
               }
             }
           }
