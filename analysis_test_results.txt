@@ -1,0 +1,730 @@
+  console.log
+    
+    🔧 Initializing test suite...
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:22:13)
+
+  console.log
+    ✅ Logged in as driver@itboy.ir
+
+      at loginUser (tests/unit/message-double-checkmark-analysis.test.ts:40:19)
+
+  console.log
+    ✅ Logged in as shipper@itboy.ir
+
+      at loginUser (tests/unit/message-double-checkmark-analysis.test.ts:40:19)
+
+  console.log
+    ✅ Authentication tokens obtained
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:27:13)
+
+  console.log
+    
+    📍 Using Conversation ID: 2
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:190:13)
+
+  console.log
+    📤 Message sent to DB: ID=124, Content="Double Checkmark Test - 1763213417823"
+
+      at sendMessage (tests/unit/message-double-checkmark-analysis.test.ts:92:17)
+
+  console.log
+    
+    📊 Initial state: Message created in DB
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:196:13)
+
+  console.log
+    
+    📋 After Creation:
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:168:13)
+
+  console.log
+       Message Status: UNKNOWN
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:173:13)
+
+  console.log
+       Message ID: 124
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:174:13)
+
+  console.log
+       Message Reads Records: 0
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:175:13)
+
+  console.log
+    
+    ✉️ Simulating message delivery to server...
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:206:13)
+
+  console.log
+    ✅ Created message_reads record: status=DELIVERED, reader_id=b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at createMessageReadRecord (tests/unit/message-double-checkmark-analysis.test.ts:156:17)
+
+  console.log
+    
+    📊 State after DELIVERED status:
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:220:13)
+
+  console.log
+    
+    📋 After DELIVERED:
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:168:13)
+
+  console.log
+       Message Status: UNKNOWN
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:173:13)
+
+  console.log
+       Message ID: 124
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:174:13)
+
+  console.log
+       Message Reads Records: 1
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:175:13)
+
+  console.log
+    
+       Record 1:
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:178:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - reader_id: b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:179:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - status: DELIVERED
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:180:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - delivered_at: 2025-11-15T13:30:20.237Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:181:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - read_at: NULL
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:182:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+    
+    ✅ DELIVERED status created: {
+      "id": 19480,
+      "status": "DELIVERED",
+      "delivered_at": "2025-11-15T13:30:20.237Z",
+      "read_at": null,
+      "created_at": "2025-11-15T13:30:21.034Z",
+      "conversation_id": 2,
+      "message_id": 124,
+      "reader_id": "b0ed390d-b433-43ec-8bdd-bf5ef3f0c770"
+    }
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:228:13)
+
+  console.log
+    🔵 FIRST CHECKMARK VISIBLE: ✓ (delivered_at timestamp: 2025-11-15T13:30:20.237Z)
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:229:13)
+
+  console.log
+    
+    👀 Simulating recipient reading message...
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:233:13)
+
+  console.log
+    ✅ Created message_reads record: status=READ, reader_id=b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at createMessageReadRecord (tests/unit/message-double-checkmark-analysis.test.ts:156:17)
+
+  console.log
+    
+    📊 State after READ status:
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:243:13)
+
+  console.log
+    
+    📋 After READ:
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:168:13)
+
+  console.log
+       Message Status: UNKNOWN
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:173:13)
+
+  console.log
+       Message ID: 124
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:174:13)
+
+  console.log
+       Message Reads Records: 2
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:175:13)
+
+  console.log
+    
+       Record 1:
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:178:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - reader_id: b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:179:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - status: DELIVERED
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:180:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - delivered_at: 2025-11-15T13:30:20.237Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:181:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - read_at: NULL
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:182:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+    
+       Record 2:
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:178:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - reader_id: b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:179:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - status: READ
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:180:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - delivered_at: 2025-11-15T13:30:22.592Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:181:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - read_at: 2025-11-15T13:30:22.592Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:182:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+    
+    📈 Final state verification:
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:256:13)
+
+  console.log
+    
+    📋 Complete Status Progression:
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:168:13)
+
+  console.log
+       Message Status: UNKNOWN
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:173:13)
+
+  console.log
+       Message ID: 124
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:174:13)
+
+  console.log
+       Message Reads Records: 2
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:175:13)
+
+  console.log
+    
+       Record 1:
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:178:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - reader_id: b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:179:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - status: DELIVERED
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:180:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - delivered_at: 2025-11-15T13:30:20.237Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:181:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - read_at: NULL
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:182:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+    
+       Record 2:
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:178:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - reader_id: b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:179:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - status: READ
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:180:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - delivered_at: 2025-11-15T13:30:22.592Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:181:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - read_at: 2025-11-15T13:30:22.592Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:182:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+    
+    📌 Status Progression:
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:262:13)
+
+  console.log
+       1️⃣ SENT: Message created in database
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:263:13)
+
+  console.log
+       2️⃣ DELIVERED: ✓ COMPLETE
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:264:13)
+
+  console.log
+       3️⃣ READ: ❌ MISSING
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:265:13)
+
+  console.log
+    
+    🎯 Checkmark Display:
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:267:13)
+
+  console.log
+       Current status: "DELIVERED"
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:268:13)
+
+  console.log
+       Expected display: ✓✓ (double checkmark for READ)
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:269:13)
+
+  console.log
+       UI should show: Green double checkmark + timestamps
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:270:13)
+
+  console.log
+    
+    🔍 Analysis: Why only one checkmark visible?
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:278:13)
+
+  console.log
+    Possible Issues:
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:280:13)
+
+  console.log
+    
+    1. ❌ Socket delivery events not firing on time:
+       - message_delivered event not reaching frontend in time
+       - Race condition between DELIVERED and READ events
+    
+    2. ❌ Frontend not updating UI when message_reads records change:
+       - ChatContext not re-fetching message_reads on socket events
+       - State update timing issue
+    
+    3. ❌ Missing automatic delivery marking:
+       - When recipient browser receives message, should create DELIVERED record
+       - Currently might only create READ record
+    
+    4. ❌ Message read query not including all records:
+       - Frontend might not be fetching all message_reads records
+       - Filtering issue hiding DELIVERED records
+    
+    5. ❌ ReadReceipt component not handling transitions:
+       - Component might show latest status (READ)
+       - But not visualize the progression (SENT → DELIVERED → READ)
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:281:13)
+
+  console.log
+    
+    🛠️ Current API records show:
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:303:13)
+
+  console.log
+    
+    📋 Current Database State:
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:168:13)
+
+  console.log
+       Message Status: UNKNOWN
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:173:13)
+
+  console.log
+       Message ID: 124
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:174:13)
+
+  console.log
+       Message Reads Records: 2
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:175:13)
+
+  console.log
+    
+       Record 1:
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:178:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - reader_id: b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:179:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - status: DELIVERED
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:180:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - delivered_at: 2025-11-15T13:30:20.237Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:181:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - read_at: NULL
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:182:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+    
+       Record 2:
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:178:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - reader_id: b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:179:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - status: READ
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:180:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - delivered_at: 2025-11-15T13:30:22.592Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:181:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - read_at: 2025-11-15T13:30:22.592Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:182:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+    
+    ✅ DB correctly stores both statuses: YES
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:307:13)
+
+  console.log
+    
+    🌍 Real-World Test: Simulating actual message flow
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:311:13)
+
+  console.log
+    📤 Message sent to DB: ID=125, Content="Real-world double checkmark test - 1763213428957"
+
+      at sendMessage (tests/unit/message-double-checkmark-analysis.test.ts:92:17)
+
+  console.log
+    
+    📤 Step A: Message sent (status=SENT)
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:317:13)
+
+  console.log
+    
+    📋 A: After Send:
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:168:13)
+
+  console.log
+       Message Status: UNKNOWN
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:173:13)
+
+  console.log
+       Message ID: 125
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:174:13)
+
+  console.log
+       Message Reads Records: 0
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:175:13)
+
+  console.log
+    
+    📨 Step B: Recipient browser receives message - create DELIVERED
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:323:13)
+
+  console.log
+    ✅ Created message_reads record: status=DELIVERED, reader_id=b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at createMessageReadRecord (tests/unit/message-double-checkmark-analysis.test.ts:156:17)
+
+  console.log
+    
+    📋 B: After Delivery:
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:168:13)
+
+  console.log
+       Message Status: UNKNOWN
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:173:13)
+
+  console.log
+       Message ID: 125
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:174:13)
+
+  console.log
+       Message Reads Records: 1
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:175:13)
+
+  console.log
+    
+       Record 1:
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:178:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - reader_id: b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:179:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - status: DELIVERED
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:180:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - delivered_at: 2025-11-15T13:30:31.728Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:181:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - read_at: NULL
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:182:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+    ✓ First checkmark visible in DB
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:329:13)
+
+  console.log
+    
+    👁️ Step C: Recipient reads message - create READ
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:333:13)
+
+  console.log
+    ✅ Created message_reads record: status=READ, reader_id=b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at createMessageReadRecord (tests/unit/message-double-checkmark-analysis.test.ts:156:17)
+
+  console.log
+    
+    📋 C: After Read:
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:168:13)
+
+  console.log
+       Message Status: UNKNOWN
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:173:13)
+
+  console.log
+       Message ID: 125
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:174:13)
+
+  console.log
+       Message Reads Records: 2
+
+      at analyzeMessageState (tests/unit/message-double-checkmark-analysis.test.ts:175:13)
+
+  console.log
+    
+       Record 1:
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:178:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - reader_id: b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:179:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - status: DELIVERED
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:180:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - delivered_at: 2025-11-15T13:30:31.728Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:181:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - read_at: NULL
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:182:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+    
+       Record 2:
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:178:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - reader_id: b0ed390d-b433-43ec-8bdd-bf5ef3f0c770
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:179:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - status: READ
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:180:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - delivered_at: 2025-11-15T13:30:34.495Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:181:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+         - read_at: 2025-11-15T13:30:34.495Z
+
+      at tests/unit/message-double-checkmark-analysis.test.ts:182:15
+          at Array.forEach (<anonymous>)
+
+  console.log
+    ✓✓ Second checkmark visible in DB
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:339:13)
+
+  console.log
+    
+    🎯 Expected vs Actual:
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:341:13)
+
+  console.log
+    Expected UI: Shows green ✓✓ (both checkmarks)
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:342:13)
+
+  console.log
+    Actual UI:   ??? (need to verify in browser)
+
+      at Object.<anonymous> (tests/unit/message-double-checkmark-analysis.test.ts:343:13)
+

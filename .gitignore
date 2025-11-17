@@ -18,3 +18,13 @@ coverage/
 playwright-report/
 test-results/
 .playwright/
+
+# Capacitor & Android
+android/
+android-release-key.jks
+.gradle/
+build/
+.gradle
+local.properties
+*.apk
+*.jks

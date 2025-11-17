@@ -1,0 +1,238 @@
+
+> truck2@0.0.0 test:message-delivery
+> jest tests/unit/message-delivery-read-status.test.ts --forceExit --testTimeout=120000
+
+  console.log
+    🔧 Initializing test suite...
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:23:13)
+
+  console.log
+    📋 Login response for driver@itboy.ir: {
+      data: {
+        expires: 900000,
+        refresh_token: 'NcmPK0ZTOfPMG3brq3JTqF03RI-BMSaSpu0LvdD5lnu6_hBVPiP5PcPkf-vnf9Ol',
+        access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZmMjA2YTNhLTQzOTYtNDNiYy1hNzYyLWZhYjI5ODAwNzg4YiIsInJvbGUiOiJiNjJjZGQ2ZS1jZTY0LTQ3NzYtOTMxYi03MWY1ZDg4YmYyOGUiLCJhcHBfYWNjZXNzIjpmYWxzZSwiYWRtaW5fYWNjZXNzIjpmYWxzZSwiaWF0IjoxNzYzMjEyMjY4LCJleHAiOjE3NjMyMTMxNjgsImlzcyI6ImRpcmVjdHVzIn0.ts-IWbBsZ_OUpejd6MeKRtFfE5_G5wardmFNe_J3SDI'
+      }
+    }
+
+      at loginUser (tests/unit/message-delivery-read-status.test.ts:47:15)
+
+  console.log
+    ✅ Logged in as driver@itboy.ir
+
+      at loginUser (tests/unit/message-delivery-read-status.test.ts:52:19)
+
+  console.log
+    📋 Login response for shipper@itboy.ir: {
+      data: {
+        expires: 900000,
+        refresh_token: 'AZOaiLSYuvkS0DZMmEXu6qDJq32xl1jzuKbA_tFITzO0umEb9D9CdYsdihAus2_D',
+        access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIwZWQzOTBkLWI0MzMtNDNlYy04YmRkLWJmNWVmM2YwYzc3MCIsInJvbGUiOiJhMzY5YWVjYi1iNDgwLTRmMWUtOGQzNi1iNzA2ZTIyOGFiNGMiLCJhcHBfYWNjZXNzIjpmYWxzZSwiYWRtaW5fYWNjZXNzIjpmYWxzZSwiaWF0IjoxNzYzMjEyMjY5LCJleHAiOjE3NjMyMTMxNjksImlzcyI6ImRpcmVjdHVzIn0.D3i9LepUnSw-VBRGp50QNOF35GryOWrLo3f5Og9tPNE'
+      }
+    }
+
+      at loginUser (tests/unit/message-delivery-read-status.test.ts:47:15)
+
+  console.log
+    ✅ Logged in as shipper@itboy.ir
+
+      at loginUser (tests/unit/message-delivery-read-status.test.ts:52:19)
+
+  console.log
+    ✅ Authentication tokens obtained
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:28:13)
+
+  console.log
+    ✅ Conversation ID: 2
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:205:13)
+
+  console.log
+    📋 Message response: {
+      "data": {
+        "id": 100,
+        "message_id": null,
+        "message_text": null,
+        "message_type": null,
+        "system_message_type": null,
+        "edited_at": null,
+        "edit_count": 0,
+        "edit_history": null,
+        "is_deleted": false,
+        "deleted_reason": null,
+        "deleted_at": null,
+        "reaction_count": 0,
+        "has_attachments": false,
+        "attachment_count": 0,
+        "metadata": null,
+        "created_at": "2025-11-15T13:11:11.101Z",
+        "updated_at": null,
+        "conversation_id": 2,
+        "sender_id": "6f206a3a-4396-43bc-a762-fab29800788b",
+        "deleted_by_id": null
+      }
+    }
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:137:15)
+
+  console.log
+    ✅ Message sent: 100
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:140:17)
+
+  console.log
+    📋 Message response: {
+      "data": {
+        "id": 101,
+        "message_id": null,
+        "message_text": null,
+        "message_type": null,
+        "system_message_type": null,
+        "edited_at": null,
+        "edit_count": 0,
+        "edit_history": null,
+        "is_deleted": false,
+        "deleted_reason": null,
+        "deleted_at": null,
+        "reaction_count": 0,
+        "has_attachments": false,
+        "attachment_count": 0,
+        "metadata": null,
+        "created_at": "2025-11-15T13:11:11.982Z",
+        "updated_at": null,
+        "conversation_id": 2,
+        "sender_id": "6f206a3a-4396-43bc-a762-fab29800788b",
+        "deleted_by_id": null
+      }
+    }
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:137:15)
+
+  console.log
+    ✅ Message sent: 101
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:140:17)
+
+  console.log
+    ✅ Message marked as read: 101
+
+      at markMessageAsRead (tests/unit/message-delivery-read-status.test.ts:182:17)
+
+  console.log
+    ✅ Message delivery status confirmed
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:244:13)
+
+  console.log
+    📋 Message response: {
+      "data": {
+        "id": 102,
+        "message_id": null,
+        "message_text": null,
+        "message_type": null,
+        "system_message_type": null,
+        "edited_at": null,
+        "edit_count": 0,
+        "edit_history": null,
+        "is_deleted": false,
+        "deleted_reason": null,
+        "deleted_at": null,
+        "reaction_count": 0,
+        "has_attachments": false,
+        "attachment_count": 0,
+        "metadata": null,
+        "created_at": "2025-11-15T13:11:16.133Z",
+        "updated_at": null,
+        "conversation_id": 2,
+        "sender_id": "6f206a3a-4396-43bc-a762-fab29800788b",
+        "deleted_by_id": null
+      }
+    }
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:137:15)
+
+  console.log
+    ✅ Message sent: 102
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:140:17)
+
+  console.log
+    ✅ Message marked as read: 102
+
+      at markMessageAsRead (tests/unit/message-delivery-read-status.test.ts:182:17)
+
+  console.log
+    ✅ Message marked as read successfully
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:270:13)
+
+  console.log
+    📋 Message response: {
+      "data": {
+        "id": 103,
+        "message_id": null,
+        "message_text": null,
+        "message_type": null,
+        "system_message_type": null,
+        "edited_at": null,
+        "edit_count": 0,
+        "edit_history": null,
+        "is_deleted": false,
+        "deleted_reason": null,
+        "deleted_at": null,
+        "reaction_count": 0,
+        "has_attachments": false,
+        "attachment_count": 0,
+        "metadata": null,
+        "created_at": "2025-11-15T13:11:18.969Z",
+        "updated_at": null,
+        "conversation_id": 2,
+        "sender_id": "6f206a3a-4396-43bc-a762-fab29800788b",
+        "deleted_by_id": null
+      }
+    }
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:137:15)
+
+  console.log
+    ✅ Message sent: 103
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:140:17)
+
+  console.log
+    📤 Step 1: Message sent with ID 103
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:278:13)
+
+  console.log
+    📋 Step 2: Initial delivery status: []
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:283:13)
+
+  console.log
+    ✅ Message marked as read: 103
+
+      at markMessageAsRead (tests/unit/message-delivery-read-status.test.ts:182:17)
+
+  console.log
+    ✅ Step 3: Message marked as read
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:293:13)
+
+  console.log
+    ✅ Status progression verified: SENT → DELIVERED → READ
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:301:13)
+
+  console.log
+    🧹 Cleaning up test suite...
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:32:13)
+
+  console.log
+    ✅ Cleanup complete
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:37:13)
+

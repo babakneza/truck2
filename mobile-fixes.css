@@ -1,0 +1,55 @@
+
+@media (max-width: 480px) {
+  .problem-card,
+  .solution-card,
+  .value-card,
+  .how-column {
+    padding: 1.5rem;
+  }
+
+  .problem-section,
+  .solution-section,
+  .values-section,
+  .how-it-works,
+  .transparency-section,
+  .commitment-section,
+  .cta-final {
+    padding: 3rem 1.5rem;
+  }
+
+  .section-header {
+    margin-bottom: 2rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .section-header p {
+    font-size: 0.95rem;
+  }
+
+  .pricing-example {
+    padding: 1.5rem;
+  }
+
+  .cta-final h2 {
+    font-size: 1.5rem;
+  }
+
+  .cta-final p {
+    font-size: 0.95rem;
+  }
+
+  .cta-primary,
+  .cta-secondary {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .cta-lg,
+  .cta-large {
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}

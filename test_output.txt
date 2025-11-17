@@ -1,0 +1,98 @@
+
+Running 12 tests using 1 worker
+
+[1A[2K[1/12] [chromium] › tests\e2e\auth-login.spec.ts:19:3 › Authentication - Login & Dashboard › should display home page with Sign In button
+[1A[2K[2/12] [chromium] › tests\e2e\auth-login.spec.ts:25:3 › Authentication - Login & Dashboard › should open auth modal on Sign In click
+[1A[2K[3/12] [chromium] › tests\e2e\auth-login.spec.ts:34:3 › Authentication - Login & Dashboard › driver should login and see dashboard
+[1A[2K  1) [chromium] › tests\e2e\auth-login.spec.ts:34:3 › Authentication - Login & Dashboard › driver should login and see dashboard 
+
+    Error: locator.click: Error: strict mode violation: getByRole('button', { name: /Sign In/i }) resolved to 2 elements:
+        1) <button class="auth-btn">Sign In / Sign Up</button> aka getByRole('button', { name: 'Sign In / Sign Up' })
+        2) <button type="submit" class="auth-submit-btn">Sign In</button> aka getByRole('button', { name: 'Sign In', exact: true })
+
+    Call log:
+    [2m  - waiting for getByRole('button', { name: /Sign In/i })[22m
+
+
+      45 |
+      46 |     const signInBtn = page.getByRole('button', { name: /Sign In/i, exact: true })
+    > 47 |     await signInBtn.click()
+         |                     ^
+      48 |
+      49 |     await page.waitForNavigation({ waitUntil: 'load' }).catch(() => null)
+      50 |     await page.waitForTimeout(2000)
+        at c:\projects\truck2\tests\e2e\auth-login.spec.ts:47:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-login-Authentication--a6eca-uld-login-and-see-dashboard-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-login-Authentication--a6eca-uld-login-and-see-dashboard-chromium\error-context.md
+
+
+[1A[2K[4/12] [chromium] › tests\e2e\auth-login.spec.ts:59:3 › Authentication - Login & Dashboard › shipper should login and see their dashboard
+[1A[2K  2) [chromium] › tests\e2e\auth-login.spec.ts:59:3 › Authentication - Login & Dashboard › shipper should login and see their dashboard 
+
+    Error: locator.click: Error: strict mode violation: getByRole('button', { name: /Sign In/i }) resolved to 2 elements:
+        1) <button class="auth-btn">Sign In / Sign Up</button> aka getByRole('button', { name: 'Sign In / Sign Up' })
+        2) <button type="submit" class="auth-submit-btn">Sign In</button> aka getByRole('button', { name: 'Sign In', exact: true })
+
+    Call log:
+    [2m  - waiting for getByRole('button', { name: /Sign In/i })[22m
+
+
+      70 |
+      71 |     const signInBtn = page.getByRole('button', { name: /Sign In/i, exact: true })
+    > 72 |     await signInBtn.click()
+         |                     ^
+      73 |
+      74 |     await page.waitForNavigation({ waitUntil: 'load' }).catch(() => null)
+      75 |     await page.waitForTimeout(2000)
+        at c:\projects\truck2\tests\e2e\auth-login.spec.ts:72:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-login-Authentication--78d14-gin-and-see-their-dashboard-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-login-Authentication--78d14-gin-and-see-their-dashboard-chromium\error-context.md
+
+
+[1A[2K[5/12] [chromium] › tests\e2e\auth-login.spec.ts:84:3 › Authentication - Login & Dashboard › should store auth token in localStorage
+[1A[2K  3) [chromium] › tests\e2e\auth-login.spec.ts:84:3 › Authentication - Login & Dashboard › should store auth token in localStorage 
+
+    Error: locator.click: Error: strict mode violation: getByRole('button', { name: /Sign In/i }) resolved to 2 elements:
+        1) <button class="auth-btn">Sign In / Sign Up</button> aka getByRole('button', { name: 'Sign In / Sign Up' })
+        2) <button type="submit" class="auth-submit-btn">Sign In</button> aka getByRole('button', { name: 'Sign In', exact: true })
+
+    Call log:
+    [2m  - waiting for getByRole('button', { name: /Sign In/i })[22m
+
+
+       95 |
+       96 |     const signInBtn = page.getByRole('button', { name: /Sign In/i, exact: true })
+    >  97 |     await signInBtn.click()
+          |                     ^
+       98 |
+       99 |     await page.waitForTimeout(3000)
+      100 |
+        at c:\projects\truck2\tests\e2e\auth-login.spec.ts:97:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-login-Authentication--aabf8--auth-token-in-localStorage-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-login-Authentication--aabf8--auth-token-in-localStorage-chromium\error-context.md
+
+
+[1A[2K[6/12] [chromium] › tests\e2e\auth-login.spec.ts:115:3 › Authentication - Login & Dashboard › should persist session after page reload
+[1A[2K  4) [chromium] › tests\e2e\auth-login.spec.ts:115:3 › Authentication - Login & Dashboard › should persist session after page reload 
+
+    Error: worker process exited unexpectedly (code=1, signal=null)
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-login-Authentication--e2ce3-t-session-after-page-reload-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-login-Authentication--e2ce3-t-session-after-page-reload-chromium\error-context.md
+
+

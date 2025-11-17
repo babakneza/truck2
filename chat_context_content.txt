@@ -1,0 +1,588 @@
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import chatAPI from '../services/chatAPI'
+import chatSocket from '../services/chatSocket'
+
+const ChatContext = createContext()
+
+export const useChatContext = () => {
+  const context = useContext(ChatContext)
+  if (!context) {
+    throw new Error('useChatContext must be used within ChatProvider')
+  }
+  return context
+}
+
+export const ChatProvider = ({ children }) => {
+  const [conversations, setConversations] = useState([])
+  const [activeConversation, setActiveConversation] = useState(null)
+  const [messages, setMessages] = useState({})
+  const [participants, setParticipants] = useState({})
+  const [typingUsers, setTypingUsers] = useState({})
+  const [unreadCounts, setUnreadCounts] = useState({})
+  const [onlineUsers, setOnlineUsers] = useState(new Set())
+  const [isConnected, setIsConnected] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [socketConnected, setSocketConnected] = useState(false)
+  const [attachmentsByMessageId] = useState({})
+
+  const userId = localStorage.getItem('user_id')
+  const userToken = localStorage.getItem('auth_token')
+
+  useEffect(() => {
+    if (!userId || !userToken) return
+
+    const initializeSocket = async () => {
+      try {
+        await chatSocket.connect(userToken, userId, {
+          onConnect: () => setSocketConnected(true),
+          onDisconnect: () => setSocketConnected(false),
+          onMessageReceived: handleMessageReceived,
+          onUserTyping: handleUserTyping,
+          onUserStoppedTyping: handleUserStoppedTyping,
+          onMessageRead: handleMessageRead,
+          onMessageDelivered: handleMessageDelivered,
+          onReactionAdded: handleReactionAdded,
+          onReactionRemoved: handleReactionRemoved,
+          onUserOnline: handleUserOnline,
+          onUserOffline: handleUserOffline,
+          onUserJoined: handleUserJoined,
+          onUserLeft: handleUserLeft,
+          onError: (err) => setError(err.message)
+        })
+      } catch (err) {
+        console.error('Failed to connect socket:', err)
+        setError('Failed to connect to chat server')
+      }
+    }
+
+    initializeSocket()
+
+    return () => {
+      chatSocket.disconnect()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, userToken])
+
+  const handleMessageReceived = useCallback((data) => {
+    const messageId = data.id || data.message_id
+    const { conversation_id, content, created_by_id, created_at, sender_id } = data
+    const actualSenderId = created_by_id || sender_id
+
+    if (!messageId || !content || !actualSenderId) {
+      console.warn('Invalid message received:', data)
+      return
+    }
+
+    if (actualSenderId === userId) {
+      return
+    }
+
+    const now = new Date().toISOString()
+
+    setMessages(prev => {
+      const existing = (prev[conversation_id] || []).map(m => m.id)
+      if (existing.includes(messageId)) {
+        return prev
+      }
+      return {
+        ...prev,
+        [conversation_id]: [
+          ...(prev[conversation_id] || []),
+          { 
+            id: messageId, 
+            content, 
+            created_by_id: actualSenderId, 
+            created_at,
+            status: 'READ',
+            read_at: now
+          }
+        ]
+      }
+    })
+
+    try {
+      chatAPI.messageReads.markAsRead(messageId).catch(err => 
+        console.error('Failed to mark received message as read:', err)
+      )
+    } catch (err) {
+      console.error('Error calling markAsRead API:', err)
+    }
+
+    chatSocket.markMessageAsRead(conversation_id, messageId)
+
+    if (activeConversation?.id !== conversation_id) {
+      setUnreadCounts(prev => ({
+        ...prev,
+        [conversation_id]: (prev[conversation_id] || 0) + 1
+      }))
+    }
+  }, [userId, activeConversation])
+
+  const handleUserTyping = useCallback((data) => {
+    const { conversation_id, userId: typingUserId, is_typing } = data
+
+    if (typingUserId === userId) return
+    
+    if (is_typing === false) {
+      setTypingUsers(prev => ({
+        ...prev,
+        [conversation_id]: (prev[conversation_id] || []).filter(id => id !== typingUserId)
+      }))
+      return
+    }
+
+    setTypingUsers(prev => ({
+      ...prev,
+      [conversation_id]: [...new Set([...(prev[conversation_id] || []), typingUserId])]
+    }))
+  }, [userId])
+
+  const handleUserStoppedTyping = useCallback((data) => {
+    const { conversation_id, userId: typingUserId } = data
+
+    setTypingUsers(prev => ({
+      ...prev,
+      [conversation_id]: (prev[conversation_id] || []).filter(id => id !== typingUserId)
+    }))
+  }, [])
+
+  const handleMessageRead = useCallback((data) => {
+    const { conversation_id, message_id } = data
+
+    setMessages(prev => ({
+      ...prev,
+      [conversation_id]: (prev[conversation_id] || []).map(msg =>
+        msg.id === message_id 
+          ? { ...msg, status: 'READ', read_at: new Date().toISOString() } 
+          : msg
+      )
+    }))
+  }, [])
+
+  const handleMessageDelivered = useCallback((data) => {
+    const { conversation_id, message_id } = data
+
+    setMessages(prev => ({
+      ...prev,
+      [conversation_id]: (prev[conversation_id] || []).map(msg =>
+        msg.id === message_id && msg.status !== 'READ'
+          ? { ...msg, status: 'DELIVERED', delivered_at: new Date().toISOString() } 
+          : msg
+      )
+    }))
+  }, [])
+
+  const handleReactionAdded = useCallback((data) => {
+    const { conversation_id, message_id, emoji, userId: reactingUserId } = data
+
+    setMessages(prev => ({
+      ...prev,
+      [conversation_id]: (prev[conversation_id] || []).map(msg => {
+        if (msg.id === message_id) {
+          return {
+            ...msg,
+            reactions: [
+              ...(msg.reactions || []),
+              { emoji, userId: reactingUserId }
+            ]
+          }
+        }
+        return msg
+      })
+    }))
+  }, [])
+
+  const handleReactionRemoved = useCallback((data) => {
+    const { conversation_id, message_id, emoji, userId: reactingUserId } = data
+
+    setMessages(prev => ({
+      ...prev,
+      [conversation_id]: (prev[conversation_id] || []).map(msg => {
+        if (msg.id === message_id) {
+          return {
+            ...msg,
+            reactions: (msg.reactions || []).filter(
+              r => !(r.emoji === emoji && r.userId === reactingUserId)
+            )
+          }
+        }
+        return msg
+      })
+    }))
+  }, [])
+
+  const handleUserOnline = useCallback(({ userId: onlineUserId }) => {
+    setOnlineUsers(prev => new Set([...prev, onlineUserId]))
+  }, [])
+
+  const handleUserOffline = useCallback(({ userId: offlineUserId }) => {
+    setOnlineUsers(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(offlineUserId)
+      return newSet
+    })
+  }, [])
+
+  const handleUserJoined = useCallback((data) => {
+    const { userId: joinedUserId } = data
+    if (activeConversation) {
+      setParticipants(prev => ({
+        ...prev,
+        [activeConversation.id]: [
+          ...(prev[activeConversation.id] || []),
+          joinedUserId
+        ]
+      }))
+    }
+  }, [activeConversation])
+
+  const handleUserLeft = useCallback((data) => {
+    const { userId: leftUserId } = data
+    if (activeConversation) {
+      setParticipants(prev => ({
+        ...prev,
+        [activeConversation.id]: (prev[activeConversation.id] || []).filter(id => id !== leftUserId)
+      }))
+    }
+  }, [activeConversation])
+
+  const fetchConversations = useCallback(async () => {
+    if (!userId) return
+
+    try {
+      setIsLoading(true)
+      const filters = {
+        _or: [
+          { initiator_id: { _eq: userId } },
+          { receiver_id: { _eq: userId } }
+        ]
+      }
+      console.log(`🔍 Fetching conversations for user ${userId}`)
+      const data = await chatAPI.conversations.list(filters)
+      console.log(`✅ Conversations fetched: ${data.length}`)
+      setConversations(data)
+      setIsConnected(true)
+    } catch (err) {
+      console.error('Failed to fetch conversations:', err)
+      setError(err.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [userId])
+
+  const fetchReadStatus = useCallback(async (messageId) => {
+    try {
+      const readRecords = await chatAPI.messageReads.getForMessage(messageId)
+      const userId = localStorage.getItem('user_id')
+      const currentUserRead = readRecords.find(r => r.reader_id === userId)
+      
+      return {
+        status: currentUserRead?.status || 'SENT',
+        delivered_at: currentUserRead?.delivered_at,
+        read_at: currentUserRead?.read_at
+      }
+    } catch (err) {
+      console.error('Failed to fetch read status for message:', messageId, err)
+      return { status: 'SENT' }
+    }
+  }, [])
+
+  const fetchMessages = useCallback(async (conversationId, limit = 100, offset = 0) => {
+    try {
+      setIsLoading(true)
+      const data = await chatAPI.messages.list(conversationId, limit, offset)
+      const validMessages = data.filter(msg => msg && msg.content && msg.content.trim())
+      
+      // Fetch read status for all messages
+      const messagesWithReadStatus = await Promise.all(validMessages.map(async (msg) => {
+        const readStatus = await fetchReadStatus(msg.id)
+        return { ...msg, ...readStatus }
+      }))
+      
+      setMessages(prev => {
+        const existing = prev[conversationId] || []
+        const existingIds = new Set(existing.map(m => m.id))
+        const newMsgs = messagesWithReadStatus.filter(m => !existingIds.has(m.id))
+        
+        if (offset === 0 || existing.length === 0) {
+          return {
+            ...prev,
+            [conversationId]: messagesWithReadStatus
+          }
+        } else {
+          return {
+            ...prev,
+            [conversationId]: [...existing, ...newMsgs]
+          }
+        }
+      })
+
+    } catch (err) {
+      console.error('Failed to fetch messages:', err)
+      setError(err.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [fetchReadStatus])
+
+  
+  const sendMessage = useCallback(async (conversationId, messageText, replyToId = null) => {
+    if (!messageText.trim() || !socketConnected) return null
+
+    try {
+      const message = await chatAPI.messages.send(conversationId, messageText, replyToId)
+
+      const enrichedMessage = {
+        ...message,
+        status: 'DELIVERED',
+        delivered_at: new Date().toISOString()
+      }
+
+      setMessages(prev => ({
+        ...prev,
+        [conversationId]: [...(prev[conversationId] || []), enrichedMessage]
+      }))
+
+      chatSocket.sendMessage(conversationId, message.id, messageText)
+      chatSocket.markMessageAsDelivered(conversationId, message.id)
+      
+      try {
+        await chatAPI.messageReads.markAsDelivered(message.id)
+      } catch (err) {
+        console.error('Failed to mark as delivered:', err)
+      }
+
+      return enrichedMessage
+    } catch (err) {
+      console.error('Failed to send message:', err)
+      setError(err.message)
+      return null
+    }
+  }, [socketConnected])
+
+  const editMessage = useCallback(async (conversationId, messageId, newText) => {
+    try {
+      const updated = await chatAPI.messages.edit(messageId, newText)
+
+      setMessages(prev => ({
+        ...prev,
+        [conversationId]: (prev[conversationId] || []).map(msg =>
+          msg.id === messageId ? updated : msg
+        )
+      }))
+
+      return updated
+    } catch (err) {
+      console.error('Failed to edit message:', err)
+      setError(err.message)
+      return null
+    }
+  }, [])
+
+  const deleteMessage = useCallback(async (conversationId, messageId) => {
+    try {
+      await chatAPI.messages.delete(messageId)
+
+      setMessages(prev => ({
+        ...prev,
+        [conversationId]: (prev[conversationId] || []).map(msg =>
+          msg.id === messageId ? { ...msg, is_deleted: true } : msg
+        )
+      }))
+    } catch (err) {
+      console.error('Failed to delete message:', err)
+      setError(err.message)
+    }
+  }, [])
+
+  const addReaction = useCallback(async (conversationId, messageId, emoji) => {
+    try {
+      const reaction = await chatAPI.reactions.add(messageId, emoji)
+      chatSocket.addReaction(conversationId, messageId, emoji)
+      return reaction
+    } catch (err) {
+      console.error('Failed to add reaction:', err)
+      setError(err.message)
+      return null
+    }
+  }, [])
+
+  const removeReaction = useCallback(async (conversationId, messageId, reactionId, emoji) => {
+    try {
+      await chatAPI.reactions.remove(reactionId)
+      chatSocket.removeReaction(conversationId, messageId, emoji)
+    } catch (err) {
+      console.error('Failed to remove reaction:', err)
+      setError(err.message)
+    }
+  }, [])
+
+  const markAsRead = useCallback((conversationId, messageId) => {
+    setMessages(prev => ({
+      ...prev,
+      [conversationId]: (prev[conversationId] || []).map(msg =>
+        msg.id === messageId ? { ...msg, status: 'READ', read_at: new Date().toISOString() } : msg
+      )
+    }))
+    chatAPI.messageReads.markAsRead(messageId).catch(err => console.error('Failed to mark message as read:', err))
+    chatSocket.markMessageAsRead(conversationId, messageId)
+  }, [])
+
+  const setTyping = useCallback((conversationId, isTyping) => {
+    chatSocket.setTyping(conversationId, isTyping)
+  }, [])
+
+  const joinConversation = useCallback((conversationId) => {
+    chatSocket.joinConversation(conversationId)
+    setActiveConversation(prev => 
+      prev ? { ...prev, id: conversationId } : { id: conversationId }
+    )
+  }, [])
+
+  const leaveConversation = useCallback((conversationId) => {
+    chatSocket.leaveConversation(conversationId)
+    if (activeConversation?.id === conversationId) {
+      setActiveConversation(null)
+    }
+  }, [activeConversation])
+
+  const createConversation = useCallback(async (participantIds) => {
+    try {
+      const conversationData = {
+        initiator_id: userId,
+        receiver_id: participantIds[0],
+        conversation_type: 'GENERAL',
+        is_active: true
+      }
+      const conversation = await chatAPI.conversations.create(conversationData)
+      setConversations(prev => [conversation, ...prev])
+      return conversation
+    } catch (err) {
+      console.error('Failed to create conversation:', err)
+      setError(err.message)
+      return null
+    }
+  }, [userId])
+
+  const archiveConversation = useCallback(async (conversationId, userRole = 'receiver') => {
+    try {
+      await chatAPI.conversations.archive(conversationId, userRole)
+      setConversations(prev => prev.filter(c => c.id !== conversationId))
+    } catch (err) {
+      console.error('Failed to archive conversation:', err)
+      setError(err.message)
+    }
+  }, [])
+
+  const uploadFile = useCallback(async (file) => {
+    try {
+      const response = await chatAPI.attachments.upload(file)
+      return response.data
+    } catch (err) {
+      console.error('Failed to upload file:', err)
+      setError(err.message)
+      return null
+    }
+  }, [])
+
+  const uploadAndAttachFiles = useCallback(async (messageId, files) => {
+    const attachedFiles = []
+    for (const file of files) {
+      try {
+        const uploadedFile = await uploadFile(file)
+        if (uploadedFile) {
+          const attachment = await chatAPI.attachments.linkToMessage(
+            messageId,
+            uploadedFile.id,
+            file.name,
+            file.type,
+            file.size
+          )
+          attachedFiles.push(attachment)
+        }
+      } catch (err) {
+        console.error(`Failed to attach file ${file.name}:`, err)
+      }
+    }
+    return attachedFiles
+  }, [uploadFile])
+
+  const downloadFile = useCallback(async (fileId, fileName) => {
+    try {
+      const token = localStorage.getItem('auth_token')
+      const response = await fetch(`${window.location.origin}/api/assets/${fileId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+
+      if (!response.ok) {
+        throw new Error('File download failed')
+      }
+
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = fileName
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error('Failed to download file:', err)
+      setError(err.message)
+    }
+  }, [])
+
+  const fetchMessageAttachments = useCallback(async (messageId) => {
+    try {
+      const attachments = await chatAPI.attachments.list(messageId)
+      return attachments
+    } catch (err) {
+      console.error('Failed to fetch attachments:', err)
+      return []
+    }
+  }, [])
+
+  const value = {
+    conversations,
+    activeConversation,
+    messages,
+    participants,
+    typingUsers,
+    unreadCounts,
+    onlineUsers,
+    isConnected,
+    isLoading,
+    error,
+    socketConnected,
+    attachmentsByMessageId,
+
+    fetchConversations,
+    fetchMessages,
+    sendMessage,
+    editMessage,
+    deleteMessage,
+    addReaction,
+    removeReaction,
+    markAsRead,
+    setTyping,
+    joinConversation,
+    leaveConversation,
+    createConversation,
+    archiveConversation,
+    uploadFile,
+    uploadAndAttachFiles,
+    downloadFile,
+    fetchMessageAttachments,
+
+    setActiveConversation,
+    setError,
+    clearError: () => setError(null)
+  }
+
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>
+}
+
+export default ChatContext

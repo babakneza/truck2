@@ -1,0 +1,117 @@
+
+Running 4 tests using 2 workers
+
+[1A[2K[1/4] [chromium] › tests\e2e\double-checkmark-verification.spec.ts:85:3 › Double Checkmark (Read Status) Verification › Verify single checkmark (DELIVERED) when message is sent
+[1A[2K[2/4] [chromium] › tests\e2e\double-checkmark-verification.spec.ts:126:3 › Double Checkmark (Read Status) Verification › Verify double checkmark (READ) when message is read by recipient
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:85:3 › Double Checkmark (Read Status) Verification › Verify single checkmark (DELIVERED) when message is sent
+
+=== TEST 1: Single Checkmark on Send ===
+
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:126:3 › Double Checkmark (Read Status) Verification › Verify double checkmark (READ) when message is read by recipient
+
+=== TEST 2: Double Checkmark on Read ===
+
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:85:3 › Double Checkmark (Read Status) Verification › Verify single checkmark (DELIVERED) when message is sent
+
+🔐 Logging in with shipper@itboy.ir...
+
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:126:3 › Double Checkmark (Read Status) Verification › Verify double checkmark (READ) when message is read by recipient
+
+📤 SENDER: Setting up sender (shipper)...
+
+[1A[2K
+🔐 Logging in with shipper@itboy.ir...
+
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:85:3 › Double Checkmark (Read Status) Verification › Verify single checkmark (DELIVERED) when message is sent
+📌 Navigating to chat...
+
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:126:3 › Double Checkmark (Read Status) Verification › Verify double checkmark (READ) when message is read by recipient
+📌 Navigating to chat...
+
+[1A[2K✅ Chat window found
+
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:85:3 › Double Checkmark (Read Status) Verification › Verify single checkmark (DELIVERED) when message is sent
+✅ Chat window found
+
+[1A[2K⏳ Waiting for chat to fully load...
+
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:126:3 › Double Checkmark (Read Status) Verification › Verify double checkmark (READ) when message is read by recipient
+
+📥 RECEIVER: Setting up receiver (driver)...
+
+[1A[2K
+🔐 Logging in with driver@itboy.ir...
+
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:85:3 › Double Checkmark (Read Status) Verification › Verify single checkmark (DELIVERED) when message is sent
+⚠️ Message input not found, checking for messages in UI...
+
+[1A[2K📨 Found 0 messages on page
+
+[1A[2K[3/4] [chromium] › tests\e2e\double-checkmark-verification.spec.ts:207:3 › Double Checkmark (Read Status) Verification › Verify checkmark status displayed correctly in message list
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:207:3 › Double Checkmark (Read Status) Verification › Verify checkmark status displayed correctly in message list
+
+=== TEST 3: Checkmark Status Display ===
+
+[1A[2K
+🔐 Logging in with shipper@itboy.ir...
+
+[1A[2K  1) [chromium] › tests\e2e\double-checkmark-verification.spec.ts:126:3 › Double Checkmark (Read Status) Verification › Verify double checkmark (READ) when message is read by recipient 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: browserContext.close: Target page, context or browser has been closed
+
+      200 |       }
+      201 |     } finally {
+    > 202 |       await senderContext.close()
+          |       ^
+      203 |       await receiverContext.close()
+      204 |     }
+      205 |   })
+        at c:\projects\truck2\tests\e2e\double-checkmark-verification.spec.ts:202:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\double-checkmark-verificat-bd4ea-essage-is-read-by-recipient-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\double-checkmark-verificat-bd4ea-essage-is-read-by-recipient-chromium\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\double-checkmark-verificat-bd4ea-essage-is-read-by-recipient-chromium\error-context.md
+
+
+[1A[2K[4/4] [chromium] › tests\e2e\double-checkmark-verification.spec.ts:246:3 › Double Checkmark (Read Status) Verification › Verify message status updates in real-time via socket
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:246:3 › Double Checkmark (Read Status) Verification › Verify message status updates in real-time via socket
+
+=== TEST 4: Real-time Status Updates via Socket ===
+
+[1A[2K
+🔐 Logging in with shipper@itboy.ir...
+
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:207:3 › Double Checkmark (Read Status) Verification › Verify checkmark status displayed correctly in message list
+📌 Navigating to chat...
+
+[1A[2K✅ Chat window found
+
+[1A[2K🔍 Scanning for existing messages and their checkmarks...
+
+[1A[2K📨 Found 0 message bubbles
+
+[1A[2K✅ Checkmark display verification completed
+
+[1A[2K[chromium] › tests\e2e\double-checkmark-verification.spec.ts:246:3 › Double Checkmark (Read Status) Verification › Verify message status updates in real-time via socket
+📌 Navigating to chat...
+
+[1A[2K✅ Chat window found
+
+[1A[2K🔌 Listening for socket events...
+
+[1A[2K⏳ Waiting for socket events (30 seconds)...
+
+[1A[2K
+📊 Captured 0 socket-related messages
+
+[1A[2K  1 failed
+    [chromium] › tests\e2e\double-checkmark-verification.spec.ts:126:3 › Double Checkmark (Read Status) Verification › Verify double checkmark (READ) when message is read by recipient 
+  3 passed (1.2m)

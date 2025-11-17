@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Dashboard API</title>
+</head>
+<body>
+    <h1>Testing Dashboard API</h1>
+    <div id="output"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        
+        async function testAPI() {
+            try {
+                const token = localStorage.getItem('directus_token');
+                output.innerHTML += `<p>Token: ${token ? 'Found' : 'Not found'}</p>`;
+                
+                if (!token) {
+                    output.innerHTML += '<p style="color: red;">Please login first!</p>';
+                    return;
+                }
+                
+                output.innerHTML += '<h2>Step 1: Fetch Shipments</h2>';
+                const shipmentsRes = await fetch('/api/items/shipments?filter={"user_id":{"_eq":"$CURRENT_USER"}}', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                output.innerHTML += `<p>Status: ${shipmentsRes.status}</p>`;
+                
+                if (shipmentsRes.ok) {
+                    const shipmentsData = await shipmentsRes.json();
+                    const shipments = shipmentsData.data || [];
+                    output.innerHTML += `<p>Shipments found: ${shipments.length}</p>`;
+                    output.innerHTML += `<pre>${JSON.stringify(shipments, null, 2)}</pre>`;
+                    
+                    if (shipments.length > 0) {
+                        const shipmentIds = shipments.map(s => s.id);
+                        
+                        output.innerHTML += '<h2>Step 2: Fetch Bids</h2>';
+                        const bidsFilter = `{"shipment_id":{"_in":[${shipmentIds.join(',')}]}}`;
+                        output.innerHTML += `<p>Filter: ${bidsFilter}</p>`;
+                        
+                        const bidsRes = await fetch(`/api/items/bids?filter=${encodeURIComponent(bidsFilter)}`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        
+                        output.innerHTML += `<p>Status: ${bidsRes.status}</p>`;
+                        
+                        if (bidsRes.ok) {
+                            const bidsData = await bidsRes.json();
+                            output.innerHTML += `<p>Bids found: ${bidsData.data?.length || 0}</p>`;
+                        } else {
+                            output.innerHTML += `<p style="color: red;">Error: ${await bidsRes.text()}</p>`;
+                        }
+                        
+                        output.innerHTML += '<h2>Step 3: Calculate Stats</h2>';
+                        const stats = {
+                            draft: shipments.filter(s => s.status?.toLowerCase() === 'draft').length,
+                            activeBidding: shipments.filter(s => ['active', 'posted'].includes(s.status?.toLowerCase())).length,
+                            inProgress: shipments.filter(s => s.status?.toLowerCase() === 'accepted').length,
+                            completed: shipments.filter(s => s.status?.toLowerCase() === 'completed').length,
+                            cancelled: shipments.filter(s => s.status?.toLowerCase() === 'cancelled').length
+                        };
+                        
+                        output.innerHTML += `<pre>${JSON.stringify(stats, null, 2)}</pre>`;
+                        output.innerHTML += `<h3>Active Shipments: ${stats.activeBidding + stats.inProgress}</h3>`;
+                    }
+                } else {
+                    output.innerHTML += `<p style="color: red;">Error: ${await shipmentsRes.text()}</p>`;
+                }
+                
+            } catch (error) {
+                output.innerHTML += `<p style="color: red;">Error: ${error.message}</p>`;
+                console.error(error);
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+
+> truck2@0.0.0 test:message-delivery
+> jest tests/unit/message-delivery-read-status.test.ts --forceExit --testTimeout=120000
+
+ts-jest[ts-jest-transformer] (WARN) Define `ts-jest` config under `globals` is deprecated. Please do
+transform: {
+    <transform_regex>: ['ts-jest', { /* ts-jest config goes here in Jest */ }],
+},
+See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/presets#advanced
+  console.log
+    🔧 Initializing test suite...
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:23:13)
+
+  console.log
+    📋 Login response for driver@itboy.ir: {
+      data: {
+        expires: 900000,
+        refresh_token: 'p6VH_H40H33xyav0K8qHRvSzq8bbwQfw2Z4DA_L3YfoJ4ctW_QteO_ozGROR03y2',
+        access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZmMjA2YTNhLTQzOTYtNDNiYy1hNzYyLWZhYjI5ODAwNzg4YiIsInJvbGUiOiJiNjJjZGQ2ZS1jZTY0LTQ3NzYtOTMxYi03MWY1ZDg4YmYyOGUiLCJhcHBfYWNjZXNzIjpmYWxzZSwiYWRtaW5fYWNjZXNzIjpmYWxzZSwiaWF0IjoxNzYzMjEyNTgzLCJleHAiOjE3NjMyMTM0ODMsImlzcyI6ImRpcmVjdHVzIn0.6Qz5PesAY9huPs_nQFShqP1zo8-94hvS6kN1eDqdW2o'
+      }
+    }
+
+      at loginUser (tests/unit/message-delivery-read-status.test.ts:68:15)
+
+  console.log
+    ✅ Logged in as driver@itboy.ir
+
+      at loginUser (tests/unit/message-delivery-read-status.test.ts:73:19)
+
+  console.log
+    📋 Login response for shipper@itboy.ir: {
+      data: {
+        expires: 900000,
+        refresh_token: '0RiqaCbtLsUhF-fOE4AVMWH6dEa1UOKDWO8h6ftcKjwh0m3qjY3gyBYbTkSZaT4y',
+        access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIwZWQzOTBkLWI0MzMtNDNlYy04YmRkLWJmNWVmM2YwYzc3MCIsInJvbGUiOiJhMzY5YWVjYi1iNDgwLTRmMWUtOGQzNi1iNzA2ZTIyOGFiNGMiLCJhcHBfYWNjZXNzIjpmYWxzZSwiYWRtaW5fYWNjZXNzIjpmYWxzZSwiaWF0IjoxNzYzMjEyNTg0LCJleHAiOjE3NjMyMTM0ODQsImlzcyI6ImRpcmVjdHVzIn0.GhK-uqgTELNmBlR-XYmP5faOaA9ky8OYm6qcLOM1p9M'
+      }
+    }
+
+      at loginUser (tests/unit/message-delivery-read-status.test.ts:68:15)
+
+  console.log
+    ✅ Logged in as shipper@itboy.ir
+
+      at loginUser (tests/unit/message-delivery-read-status.test.ts:73:19)
+
+  console.log
+    ✅ Authentication tokens obtained
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:28:13)
+
+  console.warn
+    ⚠️ Socket connection not available, using API-only mode: websocket error
+
+    [0m [90m 219 |[39m       console[33m.[39mlog([32m'✅ Both sockets connected'[39m)
+     [90m 220 |[39m     } [36mcatch[39m (error) {
+    [31m[1m>[22m[39m[90m 221 |[39m       console[33m.[39mwarn([32m'⚠️ Socket connection not available, using API-only mode:'[39m[33m,[39m error[33m.[39mmessage)
+     [90m     |[39m               [31m[1m^[22m[39m
+     [90m 222 |[39m       console[33m.[39mlog([32m'✅ API-based message delivery will still work'[39m)
+     [90m 223 |[39m     }
+     [90m 224 |[39m   }[33m,[39m [35m60000[39m)[0m
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:221:15)
+
+  console.log
+    ✅ API-based message delivery will still work
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:222:15)
+
+  console.log
+    ✅ Conversation ID: 2
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:229:13)
+
+  console.log
+    ✅ Message sent: 118
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:159:17)
+
+  console.log
+    ✅ Message sent with initial status
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:245:13)
+
+  console.log
+    ✅ Message sent: 119
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:159:17)
+
+  console.log
+    ✅ Message marked as read: 119
+
+      at markMessageAsRead (tests/unit/message-delivery-read-status.test.ts:201:17)
+
+  console.log
+    ✅ Message delivery status confirmed
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:267:13)
+
+  console.log
+    ✅ Message sent: 120
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:159:17)
+
+  console.log
+    ✅ Message marked as read: 120
+
+      at markMessageAsRead (tests/unit/message-delivery-read-status.test.ts:201:17)
+
+  console.log
+    ✅ Message marked as read successfully
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:293:13)
+
+  console.log
+    ✅ Message sent: 121
+
+      at sendMessage (tests/unit/message-delivery-read-status.test.ts:159:17)
+
+  console.log
+    📤 Step 1: Message sent with ID 121
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:301:13)
+
+  console.log
+    📋 Step 2: Initial delivery status: []
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:306:13)
+
+  console.log
+    ✅ Message marked as read: 121
+
+      at markMessageAsRead (tests/unit/message-delivery-read-status.test.ts:201:17)
+
+  console.log
+    ✅ Step 3: Message marked as read
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:316:13)
+
+  console.log
+    ✅ Status progression verified: SENT → DELIVERED → READ
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:324:13)
+
+  console.log
+    🧹 Cleaning up test suite...
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:32:13)
+
+  console.log
+    ✅ Cleanup complete
+
+      at Object.<anonymous> (tests/unit/message-delivery-read-status.test.ts:58:13)
+
+PASS tests/unit/message-delivery-read-status.test.ts (26.564 s)
+  Message Delivery & Read Status - Backend Integration Tests
+    √ Should create sockets for driver and shipper (51 ms)
+    √ Should get or create a conversation between driver and shipper (745 ms)
+    √ Should send a message from driver and show SENT status (2003 ms)
+    √ Should update message to DELIVERED status when recipient connects (4002 ms)
+    √ Should update message to READ status when recipient reads it (2795 ms)
+    √ Should maintain correct status progression: SENT -> DELIVERED -> READ (3548 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        27.623 s
+Ran all test suites matching tests/unit/message-delivery-read-status.test.ts.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?

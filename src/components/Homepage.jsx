@@ -1,203 +1,241 @@
+import { useState } from 'react'
 import './Homepage.css'
 
 export default function Homepage() {
+  const [activeTab, setActiveTab] = useState('shipper')
+
   return (
     <div className="homepage">
-      <section className="hero">
-        <div className="container hero-content">
-          <h1 className="hero-title">Smart Logistics Network</h1>
-          <p className="hero-subtitle">Connect with verified drivers or offer your delivery services. Real-time bidding, transparent pricing, reliable delivery.</p>
-          
-          <div className="hero-ctas">
-            <button className="cta-primary">
-              I Have a Shipment
-            </button>
-            <button className="cta-secondary">
-              I'm a Driver
-            </button>
+      <section className="hero-mobile">
+        <div className="hero-content">
+          <div className="hero-badge">🚀 New Era of Logistics</div>
+          <h1 className="hero-title">
+            Complete Transparency.<br />
+            <span className="gradient-text">Perfect Trust.</span>
+          </h1>
+          <p className="hero-subtitle">
+            No middlemen. No hidden fees. Shippers and drivers work directly together.
+          </p>
+        </div>
+      </section>
+
+      <section className="trust-indicators">
+        <div className="trust-item">
+          <div className="trust-icon">✓</div>
+          <div className="trust-content">
+            <h3>No Middlemen</h3>
+            <p>Direct Connection</p>
+          </div>
+        </div>
+        <div className="trust-item">
+          <div className="trust-icon">💰</div>
+          <div className="trust-content">
+            <h3>Fair Pricing</h3>
+            <p>No Hidden Fees</p>
+          </div>
+        </div>
+        <div className="trust-item">
+          <div className="trust-icon">🔒</div>
+          <div className="trust-content">
+            <h3>Secure & Safe</h3>
+            <p>Full Encryption</p>
           </div>
         </div>
       </section>
 
-      <section className="trust-signals">
-        <div className="container">
-          <div className="stats-grid">
-            <div className="stat-card">
-              <div className="stat-number">250K+</div>
-              <div className="stat-label">Shipments Delivered</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number">50K+</div>
-              <div className="stat-label">Active Drivers</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number">4.8★</div>
-              <div className="stat-label">Customer Satisfaction</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number">24/7</div>
-              <div className="stat-label">Live Support</div>
-            </div>
+      <section className="role-selector">
+        <h2>What Are You?</h2>
+        <div className="role-tabs">
+          <button
+            className={`role-tab ${activeTab === 'shipper' ? 'active' : ''}`}
+            onClick={() => setActiveTab('shipper')}
+          >
+            <span className="role-icon">📦</span>
+            <span className="role-label">Shipper</span>
+          </button>
+          <button
+            className={`role-tab ${activeTab === 'driver' ? 'active' : ''}`}
+            onClick={() => setActiveTab('driver')}
+          >
+            <span className="role-icon">🚚</span>
+            <span className="role-label">Driver</span>
+          </button>
+        </div>
+
+        <div className={`role-content ${activeTab === 'shipper' ? 'active' : ''}`}>
+          <h3>For Shippers</h3>
+          <ul className="features-list">
+            <li>
+              <span className="check">✓</span>
+              Post shipments in minutes
+            </li>
+            <li>
+              <span className="check">✓</span>
+              Get bids from verified drivers
+            </li>
+            <li>
+              <span className="check">✓</span>
+              Choose the best price & terms
+            </li>
+            <li>
+              <span className="check">✓</span>
+              Real-time delivery tracking
+            </li>
+            <li>
+              <span className="check">✓</span>
+              Direct chat with drivers
+            </li>
+          </ul>
+        </div>
+
+        <div className={`role-content ${activeTab === 'driver' ? 'active' : ''}`}>
+          <h3>For Drivers</h3>
+          <ul className="features-list">
+            <li>
+              <span className="check">✓</span>
+              Quick and easy verification
+            </li>
+            <li>
+              <span className="check">✓</span>
+              Browse all available shipments
+            </li>
+            <li>
+              <span className="check">✓</span>
+              Submit your bids
+            </li>
+            <li>
+              <span className="check">✓</span>
+              Get paid immediately after delivery
+            </li>
+            <li>
+              <span className="check">✓</span>
+              Build your trusted reputation
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section className="how-works">
+        <h2>How It Works</h2>
+        
+        <div className="process-steps">
+          <div className="step">
+            <div className="step-number">1</div>
+            <h4>Sign Up</h4>
+            <p>Quick verification</p>
+          </div>
+          <div className="step">
+            <div className="step-number">2</div>
+            <h4>Browse</h4>
+            <p>Find opportunities</p>
+          </div>
+          <div className="step">
+            <div className="step-number">3</div>
+            <h4>Connect</h4>
+            <p>Chat & negotiate</p>
+          </div>
+          <div className="step">
+            <div className="step-number">4</div>
+            <h4>Complete</h4>
+            <p>Deliver & get paid</p>
           </div>
         </div>
       </section>
 
-      <section className="how-it-works">
-        <div className="container">
-          <h2>How It Works</h2>
-          
-          <div className="how-grid">
-            <div className="how-column">
-              <h3>🚀 For Shippers</h3>
-              <ol className="how-steps">
-                <li>
-                  <span className="step-num">1</span>
-                  <div>
-                    <strong>Post Your Shipment</strong>
-                    <p>Enter package details, weight, and route</p>
-                  </div>
-                </li>
-                <li>
-                  <span className="step-num">2</span>
-                  <div>
-                    <strong>Set Your Budget</strong>
-                    <p>Specify the price you're willing to pay</p>
-                  </div>
-                </li>
-                <li>
-                  <span className="step-num">3</span>
-                  <div>
-                    <strong>Receive Driver Bids</strong>
-                    <p>Verified drivers submit their offers</p>
-                  </div>
-                </li>
-                <li>
-                  <span className="step-num">4</span>
-                  <div>
-                    <strong>Track in Real-Time</strong>
-                    <p>Monitor your shipment from pickup to delivery</p>
-                  </div>
-                </li>
-              </ol>
-            </div>
+      <section className="pricing-example">
+        <h2>Transparent Pricing</h2>
+        <p className="section-subtitle">Real example: Muscat to Salalah delivery</p>
+        
+        <div className="price-box">
+          <div className="price-item">
+            <span className="price-label">Distance</span>
+            <span className="price-value">500 km</span>
+          </div>
+          <div className="price-item">
+            <span className="price-label">Driver Rate</span>
+            <span className="price-value highlight">OMR 250</span>
+          </div>
+          <div className="price-item">
+            <span className="price-label">Delivery Insurance</span>
+            <span className="price-value">OMR 30</span>
+          </div>
+          <div className="price-item">
+            <span className="price-label">Platform Fee (5%)</span>
+            <span className="price-value">OMR 14</span>
+          </div>
+          <div className="price-divider"></div>
+          <div className="price-item total">
+            <span className="price-label">Total for Shipper</span>
+            <span className="price-value">OMR 294</span>
+          </div>
+        </div>
 
-            <div className="how-column">
-              <h3>🚚 For Drivers</h3>
-              <ol className="how-steps">
-                <li>
-                  <span className="step-num">1</span>
-                  <div>
-                    <strong>Get Verified</strong>
-                    <p>Submit documents and complete background check</p>
-                  </div>
-                </li>
-                <li>
-                  <span className="step-num">2</span>
-                  <div>
-                    <strong>Set Your Availability</strong>
-                    <p>Define your routes and carrying capacity</p>
-                  </div>
-                </li>
-                <li>
-                  <span className="step-num">3</span>
-                  <div>
-                    <strong>Browse & Bid on Shipments</strong>
-                    <p>Find suitable jobs and submit competitive bids</p>
-                  </div>
-                </li>
-                <li>
-                  <span className="step-num">4</span>
-                  <div>
-                    <strong>Earn Money</strong>
-                    <p>Get paid instantly after successful delivery</p>
-                  </div>
-                </li>
-              </ol>
-            </div>
+        <p className="price-note">
+          ⭐ Driver receives full OMR 250. All fees are transparent and visible.
+        </p>
+      </section>
+
+      <section className="why-us">
+        <h2>Why Choose Us?</h2>
+        
+        <div className="why-grid">
+          <div className="why-card">
+            <div className="why-icon">🛡️</div>
+            <h4>Secure</h4>
+            <p>Your data is encrypted</p>
+          </div>
+          
+          <div className="why-card">
+            <div className="why-icon">⚡</div>
+            <h4>Fast & Easy</h4>
+            <p>Get started in 2 minutes</p>
+          </div>
+          
+          <div className="why-card">
+            <div className="why-icon">💬</div>
+            <h4>Direct Contact</h4>
+            <p>No unnecessary layers</p>
+          </div>
+          
+          <div className="why-card">
+            <div className="why-icon">📊</div>
+            <h4>Transparent</h4>
+            <p>All details visible</p>
           </div>
         </div>
       </section>
 
-      <section className="features">
-        <div className="container">
-          <h2>Why Choose Truck2</h2>
-          
-          <div className="features-grid">
-            <div className="feature-card">
-              <div className="feature-icon">🔐</div>
-              <h3>Secure & Safe</h3>
-              <p>Protected payments and shipment insurance for every delivery</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">✨</div>
-              <h3>Transparent Pricing</h3>
-              <p>No hidden fees. All charges clearly disclosed upfront</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">⚡</div>
-              <h3>Quick & Easy</h3>
-              <p>Get your first quote in just 30 seconds</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">👥</div>
-              <h3>Verified Drivers</h3>
-              <p>All drivers are thoroughly verified and rated by users</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">📱</div>
-              <h3>Live Tracking</h3>
-              <p>Track shipments with GPS and real-time location updates</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">🎯</div>
-              <h3>24/7 Support</h3>
-              <p>Our support team is always here to help</p>
-            </div>
-          </div>
+      <section className="social-proof">
+        <h2>A New Standard</h2>
+        <div className="proof-content">
+          <p className="proof-text">
+            We're building something different. A platform where trust isn't guaranteed by algorithms, but by transparency and direct accountability.
+          </p>
         </div>
       </section>
 
-      <section className="testimonials">
-        <div className="container">
-          <h2>Trusted by Thousands</h2>
-          <p className="testimonials-subtitle">See what our users have to say about Truck2</p>
-          
-          <div className="testimonials-grid">
-            <div className="testimonial-card">
-              <div className="testimonial-rating">⭐⭐⭐⭐⭐</div>
-              <p className="testimonial-text">"Great service and professional drivers. My shipments always arrive on time and in perfect condition. Highly recommended!"</p>
-              <p className="testimonial-author">– Ahmed, E-commerce Seller</p>
-            </div>
-
-            <div className="testimonial-card">
-              <div className="testimonial-rating">⭐⭐⭐⭐⭐</div>
-              <p className="testimonial-text">"Best platform for drivers. I earn great money and the support team is always helpful. This platform has changed my business!"</p>
-              <p className="testimonial-author">– Mohammed, Driver</p>
-            </div>
-
-            <div className="testimonial-card">
-              <div className="testimonial-rating">⭐⭐⭐⭐⭐</div>
-              <p className="testimonial-text">"Completely transparent, competitive rates, and excellent customer service. I couldn't run my business without Truck2."</p>
-              <p className="testimonial-author">– Fatima, Logistics Manager</p>
-            </div>
-          </div>
+      <section className="cta-section">
+        <h2>Get Started Today</h2>
+        <p>Join a community built on transparency and fairness</p>
+        
+        <div className="cta-buttons">
+          <button className="btn btn-primary">
+            Sign In / Sign Up
+          </button>
+          <button className="btn btn-secondary">
+            Learn More
+          </button>
         </div>
       </section>
 
-      <section className="cta-final">
-        <div className="container cta-final-content">
-          <h2>Ready to Get Started?</h2>
-          <p>Join thousands of shippers and drivers making smart choices today</p>
-          
-          <div className="cta-final-buttons">
-            <button className="cta-primary cta-large">Start as a Shipper</button>
-            <button className="cta-secondary cta-large">Start as a Driver</button>
-          </div>
+      <section className="trust-section">
+        <div className="trust-box">
+          <h3>💡 Our Commitment</h3>
+          <p>
+            We're not just another platform. We're committed to building a fair and sustainable system for the logistics industry.
+            <br /><br />
+            <strong>No hidden charges. No lies. Only transparency and fairness.</strong>
+          </p>
         </div>
       </section>
     </div>

@@ -1,0 +1,27 @@
+.read-receipt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.read-receipt svg {
+  width: 14px;
+  height: 14px;
+}
+
+.sent-icon {
+  color: rgba(255, 255, 255, 0.5);
+  stroke-width: 2.5;
+}
+
+.delivered-icon {
+  color: rgba(255, 255, 255, 0.7);
+  stroke-width: 2.5;
+}
+
+.read-icon {
+  color: #4ade80;
+  stroke-width: 2.5;
+}

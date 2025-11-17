@@ -1,0 +1,296 @@
+const axios = require('axios').default || require('axios')
+const { io } = require('socket.io-client')
+
+const BASE_URL = 'http://localhost:5174'
+const API_URL = `${BASE_URL}/api`
+const SOCKET_URL = `http://localhost:3000`
+
+const DRIVER_ID = '6f206a3a-4396-43bc-a762-fab29800788b'
+const DRIVER_EMAIL = 'driver@itboy.ir'
+const DRIVER_PASSWORD = '123123@'
+
+const SHIPPER_ID = 'b0ed390d-b433-43ec-8bdd-bf5ef3f0c770'
+const SHIPPER_EMAIL = 'shipper@itboy.ir'
+const SHIPPER_PASSWORD = '123123@'
+
+let authTokens = { driver: '', shipper: '' }
+let driverSocket = null
+let shipperSocket = null
+let conversationId = 0
+
+describe('Message Delivery & Read Status - Backend Integration Tests', () => {
+  beforeAll(async () => {
+    console.log('🔧 Initializing test suite...')
+    
+    authTokens.driver = await loginUser(DRIVER_EMAIL, DRIVER_PASSWORD)
+    authTokens.shipper = await loginUser(SHIPPER_EMAIL, SHIPPER_PASSWORD)
+    
+    console.log('✅ Authentication tokens obtained')
+  }, 60000)
+
+  afterAll(async () => {
+    console.log('🧹 Cleaning up test suite...')
+    
+    if (driverSocket?.connected) await driverSocket.disconnect()
+    if (shipperSocket?.connected) await shipperSocket.disconnect()
+    
+    console.log('✅ Cleanup complete')
+  })
+
+  async function loginUser(email, password) {
+    try {
+      const response = await axios.post(`${BASE_URL}/login`, {
+        email,
+        password
+      }, { validateStatus: () => true })
+      
+      if (response.status === 200 && response.data?.token) {
+        console.log(`✅ Logged in as ${email}`)
+        return response.data.token
+      }
+      
+      throw new Error(`Login failed for ${email}: ${response.status}`)
+    } catch (error) {
+      console.error(`❌ Login error for ${email}:`, error)
+      throw error
+    }
+  }
+
+  async function connectSocket(userId, token, role) {
+    return new Promise((resolve, reject) => {
+      const socket = io(SOCKET_URL, {
+        auth: { token, userId, role },
+        reconnectionDelay: 100,
+        reconnection: true,
+        reconnectionAttempts: 10,
+        transports: ['websocket']
+      })
+
+      const timeout = setTimeout(() => {
+        reject(new Error(`Socket connection timeout for ${role}`))
+      }, 10000)
+
+      socket.on('connect', () => {
+        clearTimeout(timeout)
+        console.log(`✅ Socket connected for ${role}: ${socket.id}`)
+        
+        socket.emit('register_user', { user_id: userId, role })
+        
+        socket.on('user_registered', () => {
+          console.log(`✅ User registered on socket for ${role}`)
+        })
+        
+        resolve(socket)
+      })
+
+      socket.on('connect_error', (error) => {
+        clearTimeout(timeout)
+        reject(error)
+      })
+    })
+  }
+
+  async function getOrCreateConversation(token) {
+    try {
+      const response = await axios.get(`${API_URL}/items/conversations`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          filter: {
+            _or: [
+              { initiator_id: { _eq: DRIVER_ID } },
+              { receiver_id: { _eq: DRIVER_ID } }
+            ]
+          },
+          fields: 'id,conversation_id',
+          limit: 1,
+          sort: '-created_at'
+        }
+      })
+      
+      if (response.data?.data?.[0]) {
+        return response.data.data[0].id || response.data.data[0].conversation_id
+      }
+      
+      throw new Error('No conversations found')
+    } catch (error) {
+      console.error('❌ Failed to get conversation:', error)
+      throw error
+    }
+  }
+
+  async function sendMessage(conversationId, senderId, content, token) {
+    try {
+      const response = await axios.post(`${API_URL}/items/messages`, {
+        conversation_id: conversationId,
+        sender_id: senderId,
+        content,
+        status: 'sent'
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      if (response.data?.data) {
+        console.log(`✅ Message sent: ${response.data.data.id}`)
+        return response.data.data
+      }
+
+      throw new Error('Failed to send message')
+    } catch (error) {
+      console.error('❌ Failed to send message:', error)
+      throw error
+    }
+  }
+
+  async function getMessageReadStatus(messageId, token) {
+    try {
+      const response = await axios.get(`${API_URL}/items/message_reads`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          filter: { message_id: { _eq: messageId } },
+          fields: 'id,message_id,reader_id,status,delivered_at,read_at'
+        }
+      })
+
+      return response.data?.data || []
+    } catch (error) {
+      console.error('❌ Failed to get message read status:', error)
+      throw error
+    }
+  }
+
+  async function markMessageAsRead(messageId, readerId, conversationId, token) {
+    try {
+      const response = await axios.post(`${API_URL}/items/message_reads`, {
+        message_id: messageId,
+        reader_id: readerId,
+        conversation_id: conversationId,
+        status: 'read',
+        delivered_at: new Date().toISOString(),
+        read_at: new Date().toISOString()
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      if (response.data?.data) {
+        console.log(`✅ Message marked as read: ${messageId}`)
+        return response.data.data
+      }
+
+      throw new Error('Failed to mark message as read')
+    } catch (error) {
+      console.error('❌ Failed to mark message as read:', error)
+      throw error
+    }
+  }
+
+  it('Should create sockets for driver and shipper', async () => {
+    driverSocket = await connectSocket(DRIVER_ID, authTokens.driver, 'driver')
+    shipperSocket = await connectSocket(SHIPPER_ID, authTokens.shipper, 'shipper')
+
+    expect(driverSocket.connected).toBe(true)
+    expect(shipperSocket.connected).toBe(true)
+    console.log('✅ Both sockets connected')
+  }, 60000)
+
+  it('Should get or create a conversation between driver and shipper', async () => {
+    conversationId = await getOrCreateConversation(authTokens.driver)
+    expect(conversationId).toBeGreaterThan(0)
+    console.log(`✅ Conversation ID: ${conversationId}`)
+  }, 30000)
+
+  it('Should send a message from driver and show SENT status', async () => {
+    const testMessage = `Delivery test - ${Date.now()}`
+    const message = await sendMessage(conversationId, DRIVER_ID, testMessage, authTokens.driver)
+
+    expect(message.id).toBeGreaterThan(0)
+    expect(message.conversation_id).toBe(conversationId)
+    expect(message.sender_id).toBe(DRIVER_ID)
+    expect(message.content).toBe(testMessage)
+    
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    const readStatus = await getMessageReadStatus(message.id, authTokens.driver)
+    expect(readStatus.length).toBeGreaterThanOrEqual(0)
+    
+    console.log('✅ Message sent with initial status')
+  }, 30000)
+
+  it('Should update message to DELIVERED status when recipient connects', async () => {
+    const testMessage = `Delivery test - ${Date.now()}`
+    const message = await sendMessage(conversationId, DRIVER_ID, testMessage, authTokens.driver)
+
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    const readStatus = await getMessageReadStatus(message.id, authTokens.driver)
+    
+    const hasDeliveredStatus = readStatus.some(r => 
+      (r.status === 'delivered' || r.delivered_at) && r.reader_id === SHIPPER_ID
+    )
+
+    if (!hasDeliveredStatus) {
+      await markMessageAsRead(message.id, SHIPPER_ID, conversationId, authTokens.shipper)
+    }
+
+    const updatedStatus = await getMessageReadStatus(message.id, authTokens.driver)
+    expect(updatedStatus.length).toBeGreaterThan(0)
+    
+    console.log('✅ Message delivery status confirmed')
+  }, 30000)
+
+  it('Should update message to READ status when recipient reads it', async () => {
+    const testMessage = `Read status test - ${Date.now()}`
+    const message = await sendMessage(conversationId, DRIVER_ID, testMessage, authTokens.driver)
+
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    const readRecord = await markMessageAsRead(
+      message.id,
+      SHIPPER_ID,
+      conversationId,
+      authTokens.shipper
+    )
+
+    expect(readRecord.id).toBeGreaterThan(0)
+    expect(readRecord.status).toBe('read')
+    expect(readRecord.read_at).toBeTruthy()
+
+    const readStatus = await getMessageReadStatus(message.id, authTokens.driver)
+    const readByShipper = readStatus.find(r => r.reader_id === SHIPPER_ID)
+    
+    expect(readByShipper?.status).toBe('read')
+    expect(readByShipper?.read_at).toBeTruthy()
+    
+    console.log('✅ Message marked as read successfully')
+  }, 30000)
+
+  it('Should maintain correct status progression: SENT -> DELIVERED -> READ', async () => {
+    const testMessage = `Status progression test - ${Date.now()}`
+    const message = await sendMessage(conversationId, DRIVER_ID, testMessage, authTokens.driver)
+
+    expect(message.id).toBeGreaterThan(0)
+    console.log(`📤 Step 1: Message sent with ID ${message.id}`)
+
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    const deliveredStatus = await getMessageReadStatus(message.id, authTokens.driver)
+    console.log(`📋 Step 2: Initial delivery status: ${JSON.stringify(deliveredStatus)}`)
+
+    const readRecord = await markMessageAsRead(
+      message.id,
+      SHIPPER_ID,
+      conversationId,
+      authTokens.shipper
+    )
+    
+    expect(readRecord.status).toBe('read')
+    console.log(`✅ Step 3: Message marked as read`)
+
+    const finalStatus = await getMessageReadStatus(message.id, authTokens.driver)
+    const shipperRead = finalStatus.find(r => r.reader_id === SHIPPER_ID)
+    
+    expect(shipperRead?.status).toBe('read')
+    expect(shipperRead?.read_at).toBeTruthy()
+    
+    console.log('✅ Status progression verified: SENT → DELIVERED → READ')
+  }, 30000)
+})

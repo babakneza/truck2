@@ -1,0 +1,141 @@
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  position: relative;
+}
+
+.message-list-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #f5f5f5;
+  color: #888;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  width: 14px;
+  height: 14px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.message-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+}
+
+.empty-icon {
+  font-size: 42px;
+  margin-bottom: 10px;
+  opacity: 0.4;
+}
+
+.message-list-empty p {
+  font-size: 13px;
+  margin: 0;
+}
+
+.messages-typing-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 12px;
+  flex-shrink: 0;
+}
+
+.message-compose-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #f0f7ff;
+  border-top: 1px solid #e5e7eb;
+  font-size: 12px;
+  color: #0084ff;
+  flex-shrink: 0;
+}
+
+.info-label {
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.info-content {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #666;
+  font-size: 11px;
+}
+
+.info-close {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 2px 4px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.info-close:hover {
+  color: #0084ff;
+}
+
+.message-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.message-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.message-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.message-list::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+@media (max-width: 768px) {
+  .messages-container {
+    padding: 4px 0;
+  }
+
+  .message-list-loading {
+    padding: 8px 10px;
+  }
+}
