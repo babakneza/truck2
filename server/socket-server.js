@@ -227,3 +227,4 @@ server.listen(PORT, () => {
   console.log(`🚀 Chat server running on port ${PORT}`);
   console.log(`📡 WebSocket server ready for connections`);
 });
+  
