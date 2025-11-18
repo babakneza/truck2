@@ -9,9 +9,9 @@ const getAPIURL = () => {
     }
     return 'http://localhost:5174/api'
   }
-  const url = import.meta.env.VITE_API_URL || 'https://admin.itboy.ir'
-  const cleanUrl = url.replace(/\/api\/?$/, '').replace(/\/$/, '')
-  return `${cleanUrl}/api`
+  
+  // Use hardcoded API URL for production
+  return 'https://admin.itboy.ir/api'
 }
 
 let client = null
@@ -159,6 +159,7 @@ async function getRoles() {
 
 export async function registerUser(email, password, role) {
   try {
+    const API_URL = getAPIURL()
     const roleId = await getRoleIdByName(role)
     
     if (!roleId) {
@@ -220,6 +221,7 @@ export async function registerUser(email, password, role) {
 export async function loginUser(email, password) {
   try {
     const API_URL = getAPIURL()
+    console.log('🔐 Login attempt to:', API_URL)
     
     const authResponse = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
@@ -230,10 +232,13 @@ export async function loginUser(email, password) {
         email,
         password
       })
+    }).catch(err => {
+      console.error('❌ Fetch error:', err)
+      throw new Error(`Network error: ${err.message}. API URL: ${API_URL}`)
     })
 
     if (!authResponse.ok) {
-      const errorData = await authResponse.json()
+      const errorData = await authResponse.json().catch(() => ({}))
       throw new Error(errorData.errors?.[0]?.message || `Login failed: ${authResponse.status}`)
     }
 
@@ -255,6 +260,9 @@ export async function loginUser(email, password) {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
+    }).catch(err => {
+      console.error('❌ User fetch error:', err)
+      throw new Error(`Failed to fetch user info: ${err.message}`)
     })
 
     if (!userResponse.ok) {
@@ -282,7 +290,7 @@ export async function loginUser(email, password) {
       access_token: token
     }
   } catch (error) {
-    console.error('Login error:', error)
+    console.error('❌ Login error:', error)
     return {
       success: false,
       error: error.message || 'Login failed'
