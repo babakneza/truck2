@@ -1,17 +1,16 @@
-import { createDirectus, rest, authentication } from '@directus/sdk'
+import { createDirectus, rest, authentication, login as directusLogin } from '@directus/sdk'
 
 const isDev = import.meta.env.DEV
 
 const getAPIURL = () => {
   if (isDev) {
     if (typeof window !== 'undefined' && window.location) {
-      return `${window.location.origin}/api`
+      return window.location.origin
     }
-    return 'http://localhost:5174/api'
+    return 'http://localhost:5174'
   }
   
-  // Use hardcoded API URL for production
-  return 'https://admin.itboy.ir/api'
+  return 'https://admin.itboy.ir'
 }
 
 let client = null
@@ -31,42 +30,32 @@ export function getDirectusClient() {
 
 export async function refreshAccessToken() {
   try {
+    const directusClient = getDirectusClient()
     const refreshToken = localStorage.getItem('auth_refresh_token')
     
     if (!refreshToken) {
       throw new Error('No refresh token available')
     }
 
-    const API_URL = getAPIURL()
-    const response = await fetch(`${API_URL}/auth/refresh`, {
+    const result = await directusClient.request({
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
+      path: '/auth/refresh',
+      body: {
         refresh_token: refreshToken
-      })
+      }
     })
 
-    if (!response.ok) {
-      throw new Error('Token refresh failed')
-    }
-
-    const data = await response.json()
-    const newToken = data.data?.access_token
-    const newRefreshToken = data.data?.refresh_token
-
-    if (newToken) {
-      localStorage.setItem('auth_token', newToken)
-      if (newRefreshToken) {
-        localStorage.setItem('auth_refresh_token', newRefreshToken)
+    if (result.access_token) {
+      localStorage.setItem('auth_token', result.access_token)
+      if (result.refresh_token) {
+        localStorage.setItem('auth_refresh_token', result.refresh_token)
       }
       
       startTokenRefreshTimer()
       
       return {
         success: true,
-        access_token: newToken
+        access_token: result.access_token
       }
     }
 
@@ -137,19 +126,13 @@ async function getRoles() {
   }
   
   try {
-    const API_URL = getAPIURL()
-    const response = await fetch(`${API_URL}/roles`, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    const directusClient = getDirectusClient()
+    const roles = await directusClient.request({
+      method: 'GET',
+      path: '/roles'
     })
     
-    if (!response.ok) {
-      throw new Error(`Failed to fetch roles: ${response.status}`)
-    }
-    
-    const data = await response.json()
-    roleCache = data.data || []
+    roleCache = Array.isArray(roles) ? roles : roles.data || []
     return roleCache
   } catch (error) {
     console.error('Error fetching roles:', error)
@@ -159,7 +142,7 @@ async function getRoles() {
 
 export async function registerUser(email, password, role) {
   try {
-    const API_URL = getAPIURL()
+    const directusClient = getDirectusClient()
     const roleId = await getRoleIdByName(role)
     
     if (!roleId) {
@@ -169,31 +152,18 @@ export async function registerUser(email, password, role) {
       }
     }
 
-    const response = await fetch(`${API_URL}/users`, {
+    const newUser = await directusClient.request({
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
+      path: '/users',
+      body: {
         email,
         password,
         first_name: 'User',
         last_name: '',
         role: roleId,
         status: 'active'
-      })
+      }
     })
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      throw new Error(errorData.errors?.[0]?.message || `Registration failed: ${response.status}`)
-    }
-
-    let userId = null
-    if (response.status !== 204) {
-      const user = await response.json()
-      userId = user.data?.id
-    }
 
     const loginResponse = await loginUser(email, password)
 
@@ -201,7 +171,7 @@ export async function registerUser(email, password, role) {
       return {
         success: true,
         user: {
-          id: userId || loginResponse.user.id,
+          id: newUser.id || loginResponse.user.id,
           email,
           role: loginResponse.user.role
         },
@@ -220,61 +190,30 @@ export async function registerUser(email, password, role) {
 
 export async function loginUser(email, password) {
   try {
-    const API_URL = getAPIURL()
-    console.log('🔐 Login attempt to:', API_URL)
+    const directusClient = getDirectusClient()
     
-    const authResponse = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email,
-        password
-      })
-    }).catch(err => {
-      console.error('❌ Fetch error:', err)
-      throw new Error(`Network error: ${err.message}. API URL: ${API_URL}`)
-    })
+    const result = await directusClient.request(
+      directusLogin(email, password, { mode: 'json' })
+    )
 
-    if (!authResponse.ok) {
-      const errorData = await authResponse.json().catch(() => ({}))
-      throw new Error(errorData.errors?.[0]?.message || `Login failed: ${authResponse.status}`)
-    }
-
-    const authData = await authResponse.json()
-    const token = authData.data?.access_token
-    const refreshToken = authData.data?.refresh_token
-
-    if (!token) {
-      throw new Error('No access token in login response')
-    }
-
-    localStorage.setItem('auth_token', token)
-    if (refreshToken) {
-      localStorage.setItem('auth_refresh_token', refreshToken)
-    }
-
-    const userResponse = await fetch(`${API_URL}/users/me?fields=id,email,role,first_name,last_name`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    if (result.access_token) {
+      localStorage.setItem('auth_token', result.access_token)
+      if (result.refresh_token) {
+        localStorage.setItem('auth_refresh_token', result.refresh_token)
       }
-    }).catch(err => {
-      console.error('❌ User fetch error:', err)
-      throw new Error(`Failed to fetch user info: ${err.message}`)
-    })
-
-    if (!userResponse.ok) {
-      throw new Error(`Failed to get user info: ${userResponse.status}`)
     }
 
-    const userData = await userResponse.json()
-    const user = userData.data
+    const userInfo = await directusClient.request({
+      method: 'GET',
+      path: '/users/me',
+      params: {
+        fields: ['id', 'email', 'role', 'first_name', 'last_name']
+      }
+    })
 
-    const userRole = await getRoleNameById(user.role)
+    const userRole = await getRoleNameById(userInfo.role)
     
-    localStorage.setItem('user_id', user.id)
+    localStorage.setItem('user_id', userInfo.id)
     localStorage.setItem('user_email', email)
     localStorage.setItem('user_role', userRole)
 
@@ -283,11 +222,11 @@ export async function loginUser(email, password) {
     return {
       success: true,
       user: {
-        id: user.id,
-        email: user.email,
+        id: userInfo.id,
+        email: userInfo.email,
         role: userRole
       },
-      access_token: token
+      access_token: result.access_token
     }
   } catch (error) {
     console.error('❌ Login error:', error)
@@ -300,22 +239,11 @@ export async function loginUser(email, password) {
 
 export async function logoutUser() {
   try {
-    const token = localStorage.getItem('auth_token')
-
-    if (token) {
-      const API_URL = getAPIURL()
-      const logoutResponse = await fetch(`${API_URL}/auth/logout`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (!logoutResponse.ok && logoutResponse.status !== 401 && logoutResponse.status !== 400) {
-        console.error('Logout request failed:', logoutResponse.status)
-      }
-    }
+    const directusClient = getDirectusClient()
+    await directusClient.request({
+      method: 'POST',
+      path: '/auth/logout'
+    })
   } catch (error) {
     console.error('Logout error:', error)
   } finally {
