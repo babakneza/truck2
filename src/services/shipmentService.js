@@ -9,9 +9,7 @@ const getAPIURL = () => {
     }
     return 'http://localhost:5174/api'
   }
-  const url = import.meta.env.VITE_API_URL || 'https://admin.itboy.ir'
-  const cleanUrl = url.replace(/\/api\/?$/, '').replace(/\/$/, '')
-  return `${cleanUrl}/api`
+  return 'https://admin.itboy.ir'
 }
 
 const getAPIURLMemoized = () => {
