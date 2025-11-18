@@ -1,7 +1,22 @@
 import { refreshAccessToken, ensureTokenValid } from './directusAuth'
 
 const isDev = import.meta.env.DEV
-const API_URL = isDev ? '/api' : (import.meta.env.VITE_API_URL || 'https://admin.itboy.ir')
+
+const getAPIURL = () => {
+  if (isDev) {
+    if (typeof window !== 'undefined' && window.location) {
+      return `${window.location.origin}/api`
+    }
+    return 'http://localhost:5174/api'
+  }
+  const url = import.meta.env.VITE_API_URL || 'https://admin.itboy.ir'
+  const cleanUrl = url.replace(/\/api\/?$/, '').replace(/\/$/, '')
+  return `${cleanUrl}/api`
+}
+
+const getAPIURLMemoized = () => {
+  return getAPIURL()
+}
 
 async function fetchWithTokenRefresh(url, options = {}) {
   let tokenResult = await ensureTokenValid()
@@ -36,9 +51,9 @@ async function fetchWithTokenRefresh(url, options = {}) {
 export async function fetchShipperDashboardData() {
   try {
     const [shipmentsRes, bidsRes, paymentsRes] = await Promise.all([
-      fetchWithTokenRefresh(`${API_URL}/items/shipments?filter={"user_id":{"_eq":"$CURRENT_USER"}}`),
-      fetchWithTokenRefresh(`${API_URL}/items/bids`),
-      fetchWithTokenRefresh(`${API_URL}/items/payments`)
+      fetchWithTokenRefresh(`${getAPIURLMemoized()}/items/shipments?filter={"user_id":{"_eq":"$CURRENT_USER"}}`),
+      fetchWithTokenRefresh(`${getAPIURLMemoized()}/items/bids`),
+      fetchWithTokenRefresh(`${getAPIURLMemoized()}/items/payments`)
     ])
 
     const shipments = shipmentsRes.ok ? (await shipmentsRes.json()).data || [] : []
@@ -55,10 +70,10 @@ export async function fetchShipperDashboardData() {
 export async function fetchShipperProfile(userId) {
   try {
     const [userRes, profileRes, kycRes, paymentMethodsRes] = await Promise.all([
-      fetchWithTokenRefresh(`${API_URL}/users/me?fields=*`),
-      fetchWithTokenRefresh(`${API_URL}/items/shipper_profiles?filter={"user_id":{"_eq":"${userId}"}}`),
-      fetchWithTokenRefresh(`${API_URL}/items/kyc_documents?filter={"user_id":{"_eq":"${userId}"}}`),
-      fetchWithTokenRefresh(`${API_URL}/items/payment_methods?filter={"user_id":{"_eq":"${userId}"}}`)
+      fetchWithTokenRefresh(`${getAPIURLMemoized()}/users/me?fields=*`),
+      fetchWithTokenRefresh(`${getAPIURLMemoized()}/items/shipper_profiles?filter={"user_id":{"_eq":"${userId}"}}`),
+      fetchWithTokenRefresh(`${getAPIURLMemoized()}/items/kyc_documents?filter={"user_id":{"_eq":"${userId}"}}`),
+      fetchWithTokenRefresh(`${getAPIURLMemoized()}/items/payment_methods?filter={"user_id":{"_eq":"${userId}"}}`)
     ])
 
     const user = userRes.ok ? (await userRes.json()).data : {}
@@ -91,7 +106,7 @@ export async function updateShipperProfile(userId, profileData) {
 
     if (Object.keys(userUpdate).length > 0) {
       promises.push(
-        fetchWithTokenRefresh(`${API_URL}/users/me`, {
+        fetchWithTokenRefresh(`${getAPIURLMemoized()}/users/me`, {
           method: 'PATCH',
           body: JSON.stringify(userUpdate)
         })
@@ -101,14 +116,14 @@ export async function updateShipperProfile(userId, profileData) {
     if (Object.keys(profileUpdate).length > 0) {
       if (profileData.profileId) {
         promises.push(
-          fetchWithTokenRefresh(`${API_URL}/items/shipper_profiles/${profileData.profileId}`, {
+          fetchWithTokenRefresh(`${getAPIURLMemoized()}/items/shipper_profiles/${profileData.profileId}`, {
             method: 'PATCH',
             body: JSON.stringify(profileUpdate)
           })
         )
       } else {
         promises.push(
-          fetchWithTokenRefresh(`${API_URL}/items/shipper_profiles`, {
+          fetchWithTokenRefresh(`${getAPIURLMemoized()}/items/shipper_profiles`, {
             method: 'POST',
             body: JSON.stringify({
               ...profileUpdate,

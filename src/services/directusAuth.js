@@ -1,7 +1,18 @@
 import { createDirectus, rest, authentication } from '@directus/sdk'
 
 const isDev = import.meta.env.DEV
-const API_URL = isDev ? '/api' : (import.meta.env.VITE_API_URL || 'https://admin.itboy.ir')
+
+const getAPIURL = () => {
+  if (isDev) {
+    if (typeof window !== 'undefined' && window.location) {
+      return `${window.location.origin}/api`
+    }
+    return 'http://localhost:5174/api'
+  }
+  const url = import.meta.env.VITE_API_URL || 'https://admin.itboy.ir'
+  const cleanUrl = url.replace(/\/api\/?$/, '').replace(/\/$/, '')
+  return `${cleanUrl}/api`
+}
 
 let client = null
 let roleCache = null
@@ -10,9 +21,10 @@ let inactivityTimeout = null
 
 export function getDirectusClient() {
   if (!client) {
+    const API_URL = getAPIURL()
     client = createDirectus(API_URL)
       .with(rest())
-      .with(authentication())
+      .with(authentication('session', { credentials: 'include' }))
   }
   return client
 }
@@ -25,6 +37,7 @@ export async function refreshAccessToken() {
       throw new Error('No refresh token available')
     }
 
+    const API_URL = getAPIURL()
     const response = await fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',
       headers: {
@@ -61,7 +74,9 @@ export async function refreshAccessToken() {
   } catch (error) {
     console.error('Token refresh error:', error)
     await logoutUser()
-    window.location.reload()
+    if (typeof window !== 'undefined') {
+      window.location.reload()
+    }
     return {
       success: false,
       error: error.message
@@ -122,6 +137,7 @@ async function getRoles() {
   }
   
   try {
+    const API_URL = getAPIURL()
     const response = await fetch(`${API_URL}/roles`, {
       headers: {
         'Content-Type': 'application/json'
@@ -162,7 +178,8 @@ export async function registerUser(email, password, role) {
         password,
         first_name: 'User',
         last_name: '',
-        role: roleId
+        role: roleId,
+        status: 'active'
       })
     })
 
@@ -202,6 +219,8 @@ export async function registerUser(email, password, role) {
 
 export async function loginUser(email, password) {
   try {
+    const API_URL = getAPIURL()
+    
     const authResponse = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
@@ -222,43 +241,48 @@ export async function loginUser(email, password) {
     const token = authData.data?.access_token
     const refreshToken = authData.data?.refresh_token
 
-    if (token) {
-      const roleId = getRoleFromToken(token)
-      const userRole = await getRoleNameById(roleId)
+    if (!token) {
+      throw new Error('No access token in login response')
+    }
 
-      const userResponse = await fetch(`${API_URL}/users/me?fields=id,email,role`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (!userResponse.ok) {
-        throw new Error(`Failed to get user info: ${userResponse.status}`)
-      }
-
-      const userData = await userResponse.json()
-      const user = userData.data
-
-      localStorage.setItem('auth_token', token)
+    localStorage.setItem('auth_token', token)
+    if (refreshToken) {
       localStorage.setItem('auth_refresh_token', refreshToken)
-      localStorage.setItem('user_id', user.id)
-      localStorage.setItem('user_email', email)
-      localStorage.setItem('user_role', userRole)
+    }
 
-      startTokenRefreshTimer()
-
-      return {
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          role: userRole
-        },
-        access_token: token
+    const userResponse = await fetch(`${API_URL}/users/me?fields=id,email,role,first_name,last_name`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
+    })
+
+    if (!userResponse.ok) {
+      throw new Error(`Failed to get user info: ${userResponse.status}`)
+    }
+
+    const userData = await userResponse.json()
+    const user = userData.data
+
+    const userRole = await getRoleNameById(user.role)
+    
+    localStorage.setItem('user_id', user.id)
+    localStorage.setItem('user_email', email)
+    localStorage.setItem('user_role', userRole)
+
+    startTokenRefreshTimer()
+
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: userRole
+      },
+      access_token: token
     }
   } catch (error) {
+    console.error('Login error:', error)
     return {
       success: false,
       error: error.message || 'Login failed'
@@ -271,6 +295,7 @@ export async function logoutUser() {
     const token = localStorage.getItem('auth_token')
 
     if (token) {
+      const API_URL = getAPIURL()
       const logoutResponse = await fetch(`${API_URL}/auth/logout`, {
         method: 'POST',
         headers: {
@@ -360,13 +385,4 @@ async function getRoleNameById(roleId) {
   }
 }
 
-function getRoleFromToken(token) {
-  try {
-    const jwt = token.split('.')[1]
-    const decoded = JSON.parse(atob(jwt))
-    return decoded.role || 'unknown'
-  } catch (error) {
-    console.error('Error parsing JWT token:', error)
-    return 'unknown'
-  }
-}
+

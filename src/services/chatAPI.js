@@ -1,7 +1,22 @@
 import { ensureTokenValid } from './directusAuth'
 
 const isDev = import.meta.env.DEV
-const API_URL = isDev ? '/api' : (import.meta.env.VITE_API_URL || 'https://admin.itboy.ir')
+
+const getAPIURL = () => {
+  if (isDev) {
+    if (typeof window !== 'undefined' && window.location) {
+      return `${window.location.origin}/api`
+    }
+    return 'http://localhost:5174/api'
+  }
+  const url = import.meta.env.VITE_API_URL || 'https://admin.itboy.ir'
+  const cleanUrl = url.replace(/\/api\/?$/, '').replace(/\/$/, '')
+  return `${cleanUrl}/api`
+}
+
+const getAPIURLMemoized = () => {
+  return getAPIURL()
+}
 
 const getHeaders = async () => {
   const tokenResult = await ensureTokenValid()
@@ -43,6 +58,7 @@ const makeRequest = async (method, endpoint, body = null) => {
     options.body = JSON.stringify(body)
   }
 
+  const API_URL = getAPIURLMemoized()
   console.log(`🔗 ${method} ${API_URL}${endpoint}`)
   const response = await fetch(`${API_URL}${endpoint}`, options)
 
@@ -174,11 +190,12 @@ export const chatAPI = {
           let userAvatar = customUser?.profile_photo || null
 
           if (userAvatar) {
+            const baseURL = getAPIURLMemoized()
             if (typeof userAvatar === 'object' && userAvatar.id) {
-              userAvatar = `${API_URL}/assets/${userAvatar.id}`
+              userAvatar = `${baseURL}/assets/${userAvatar.id}`
             } else if (typeof userAvatar === 'string') {
-              if (!userAvatar.includes('http') && !userAvatar.startsWith(`${API_URL}`)) {
-                userAvatar = `${API_URL}/assets/${userAvatar}`
+              if (!userAvatar.includes('http') && !userAvatar.startsWith(`${baseURL}`)) {
+                userAvatar = `${baseURL}/assets/${userAvatar}`
               }
             }
           }
@@ -650,7 +667,8 @@ export const chatAPI = {
 
       const tokenResult = await ensureTokenValid()
       const token = tokenResult.success ? tokenResult.access_token : localStorage.getItem('auth_token')
-      const response = await fetch(`${API_URL}/files`, {
+      const baseURL = getAPIURLMemoized()
+      const response = await fetch(`${baseURL}/files`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData

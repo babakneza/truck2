@@ -1,7 +1,22 @@
 import { refreshAccessToken, ensureTokenValid } from './directusAuth'
 
 const isDev = import.meta.env.DEV
-const API_URL = isDev ? '/api' : (import.meta.env.VITE_API_URL || 'https://admin.itboy.ir')
+
+const getAPIURL = () => {
+  if (isDev) {
+    if (typeof window !== 'undefined' && window.location) {
+      return `${window.location.origin}/api`
+    }
+    return 'http://localhost:5174/api'
+  }
+  const url = import.meta.env.VITE_API_URL || 'https://admin.itboy.ir'
+  const cleanUrl = url.replace(/\/api\/?$/, '').replace(/\/$/, '')
+  return `${cleanUrl}/api`
+}
+
+const getAPIURLMemoized = () => {
+  return getAPIURL()
+}
 
 async function fetchWithTokenRefresh(url, options = {}) {
   let tokenResult = await ensureTokenValid()
@@ -74,6 +89,7 @@ export async function createShipment(shipmentData) {
       posted_at: new Date().toISOString()
     }
 
+    const API_URL = getAPIURLMemoized()
     const response = await fetchWithTokenRefresh(`${API_URL}/items/shipments`, {
       method: 'POST',
       body: JSON.stringify(payload)
@@ -95,6 +111,7 @@ export async function createShipment(shipmentData) {
 
     if (shipmentData.gallery && shipmentData.gallery.length > 0) {
       const galleryItems = shipmentData.gallery.map(img => ({ directus_files_id: img.id }))
+      const API_URL = getAPIURLMemoized()
       const galleryResponse = await fetchWithTokenRefresh(`${API_URL}/items/shipments/${shipmentId}`, {
         method: 'PATCH',
         body: JSON.stringify({ gallery: { create: galleryItems } })
@@ -114,6 +131,7 @@ export async function createShipment(shipmentData) {
 
 export async function getShipmentById(id) {
   try {
+    const API_URL = getAPIURLMemoized()
     const response = await fetchWithTokenRefresh(`${API_URL}/items/shipments/${id}?fields=*,user_id.id,user_id.first_name,user_id.last_name,user_id.email,gallery.id,gallery.directus_files_id.*`)
 
     if (!response.ok) {
@@ -143,6 +161,7 @@ export async function updateShipment(id, updates) {
       throw new Error('You do not have permission to update this shipment')
     }
 
+    const API_URL = getAPIURLMemoized()
     const response = await fetchWithTokenRefresh(`${API_URL}/items/shipments/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(updates)
@@ -176,6 +195,7 @@ export async function deleteShipment(id) {
       throw new Error('You do not have permission to delete this shipment')
     }
 
+    const API_URL = getAPIURLMemoized()
     const response = await fetchWithTokenRefresh(`${API_URL}/items/shipments/${id}`, {
       method: 'PATCH',
       body: JSON.stringify({ status: 'DELETED' })
@@ -223,6 +243,7 @@ export async function fetchShipments() {
     if (!userId) throw new Error('User ID not found')
 
     const filter = encodeURIComponent(JSON.stringify({"user_id":{"_eq":userId}}))
+    const API_URL = getAPIURLMemoized()
     const response = await fetchWithTokenRefresh(`${API_URL}/items/shipments?filter=${filter}`)
 
     if (!response.ok) {

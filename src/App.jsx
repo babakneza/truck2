@@ -69,7 +69,6 @@ function App() {
     return () => clearTimeout(timer)
   }, [currentPage])
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const storedUser = getStoredUser()
     setUser(storedUser)
@@ -103,6 +102,7 @@ function App() {
       window.removeEventListener('authChange', handleAuthChange)
       window.removeEventListener('navigate', handleNavigate)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const renderPage = () => {
