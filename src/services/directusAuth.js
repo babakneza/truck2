@@ -1,29 +1,20 @@
-import { createDirectus, rest, authentication, login as directusLogin } from '@directus/sdk'
-
-const isDev = import.meta.env.DEV
-
-const getAPIURL = () => {
-  if (isDev) {
-    if (typeof window !== 'undefined' && window.location) {
-      return window.location.origin
-    }
-    return 'http://localhost:5174'
-  }
-  
-  return 'https://admin.itboy.ir'
-}
+import { createDirectus, rest, authentication, readMe, readRoles } from '@directus/sdk'
 
 let client = null
 let roleCache = null
 let refreshTimer = null
 let inactivityTimeout = null
 
-export function getDirectusClient() {
+function getDirectusClient() {
   if (!client) {
-    const API_URL = getAPIURL()
-    client = createDirectus(API_URL)
+    client = createDirectus('https://admin.itboy.ir')
       .with(rest())
-      .with(authentication('session', { credentials: 'include' }))
+      .with(authentication('json'))
+
+    const token = localStorage.getItem('auth_token')
+    if (token) {
+      client.setToken(token)
+    }
   }
   return client
 }
@@ -31,31 +22,21 @@ export function getDirectusClient() {
 export async function refreshAccessToken() {
   try {
     const directusClient = getDirectusClient()
-    const refreshToken = localStorage.getItem('auth_refresh_token')
-    
-    if (!refreshToken) {
-      throw new Error('No refresh token available')
-    }
 
-    const result = await directusClient.request({
-      method: 'POST',
-      path: '/auth/refresh',
-      body: {
-        refresh_token: refreshToken
-      }
-    })
+    const { access_token, refresh_token } = await directusClient.refresh()
 
-    if (result.access_token) {
-      localStorage.setItem('auth_token', result.access_token)
-      if (result.refresh_token) {
-        localStorage.setItem('auth_refresh_token', result.refresh_token)
+    if (access_token) {
+      localStorage.setItem('auth_token', access_token)
+      if (refresh_token) {
+        localStorage.setItem('auth_refresh_token', refresh_token)
       }
       
+      directusClient.setToken(access_token)
       startTokenRefreshTimer()
       
       return {
         success: true,
-        access_token: result.access_token
+        access_token
       }
     }
 
@@ -127,12 +108,9 @@ async function getRoles() {
   
   try {
     const directusClient = getDirectusClient()
-    const roles = await directusClient.request({
-      method: 'GET',
-      path: '/roles'
-    })
+    const roles = await directusClient.request(readRoles())
     
-    roleCache = Array.isArray(roles) ? roles : roles.data || []
+    roleCache = Array.isArray(roles) ? roles : []
     return roleCache
   } catch (error) {
     console.error('Error fetching roles:', error)
@@ -152,7 +130,7 @@ export async function registerUser(email, password, role) {
       }
     }
 
-    const newUser = await directusClient.request({
+    await directusClient.request({
       method: 'POST',
       path: '/users',
       body: {
@@ -171,7 +149,6 @@ export async function registerUser(email, password, role) {
       return {
         success: true,
         user: {
-          id: newUser.id || loginResponse.user.id,
           email,
           role: loginResponse.user.role
         },
@@ -190,30 +167,31 @@ export async function registerUser(email, password, role) {
 
 export async function loginUser(email, password) {
   try {
+    console.log('Attempting login at: https://admin.itboy.ir')
+    
     const directusClient = getDirectusClient()
     
-    const result = await directusClient.request(
-      directusLogin(email, password, { mode: 'json' })
-    )
-
-    if (result.access_token) {
-      localStorage.setItem('auth_token', result.access_token)
-      if (result.refresh_token) {
-        localStorage.setItem('auth_refresh_token', result.refresh_token)
-      }
-    }
-
-    const userInfo = await directusClient.request({
-      method: 'GET',
-      path: '/users/me',
-      params: {
-        fields: ['id', 'email', 'role', 'first_name', 'last_name']
-      }
+    const { access_token, refresh_token } = await directusClient.login({
+      email,
+      password
     })
 
-    const userRole = await getRoleNameById(userInfo.role)
+    if (!access_token) {
+      throw new Error('No access token in response')
+    }
+
+    localStorage.setItem('auth_token', access_token)
+    if (refresh_token) {
+      localStorage.setItem('auth_refresh_token', refresh_token)
+    }
+
+    directusClient.setToken(access_token)
+
+    const user = await directusClient.request(readMe())
+
+    const userRole = await getRoleNameById(user.role)
     
-    localStorage.setItem('user_id', userInfo.id)
+    localStorage.setItem('user_id', user.id)
     localStorage.setItem('user_email', email)
     localStorage.setItem('user_role', userRole)
 
@@ -222,11 +200,11 @@ export async function loginUser(email, password) {
     return {
       success: true,
       user: {
-        id: userInfo.id,
-        email: userInfo.email,
+        id: user.id,
+        email: user.email,
         role: userRole
       },
-      access_token: result.access_token
+      access_token
     }
   } catch (error) {
     console.error('❌ Login error:', error)
@@ -240,10 +218,8 @@ export async function loginUser(email, password) {
 export async function logoutUser() {
   try {
     const directusClient = getDirectusClient()
-    await directusClient.request({
-      method: 'POST',
-      path: '/auth/logout'
-    })
+    
+    await directusClient.logout()
   } catch (error) {
     console.error('Logout error:', error)
   } finally {
@@ -253,6 +229,7 @@ export async function logoutUser() {
     localStorage.removeItem('user_id')
     localStorage.removeItem('user_email')
     localStorage.removeItem('user_role')
+    
     client = null
   }
 }
